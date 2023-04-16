@@ -24,6 +24,8 @@ public class UserInterceptor implements HandlerInterceptor {
         if (token == null || token.equals("")) {
             throw new JwtException("no token");
         }
+        token = token.substring(7);
+        System.out.println(token);
         String email = JwtUtils.getUserEmail(token);
         User user = userService.selectUserByEmail(email);
         if (user == null) {

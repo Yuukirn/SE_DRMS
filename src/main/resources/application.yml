@@ -16,7 +16,18 @@ spring:
     password: ${QQ_EMAIL_CODE}
     default-encoding: UTF-8
 
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+
 mybatis:
   mapper-locations: com.nqff.drms.mapper/*
   configuration:
     map-underscore-to-camel-case: true
+
+springdoc:
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true
