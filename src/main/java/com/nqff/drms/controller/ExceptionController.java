@@ -2,7 +2,6 @@ package com.nqff.drms.controller;
 
 import com.nqff.drms.utils.Result;
 import io.jsonwebtoken.JwtException;
-import org.apache.shiro.ShiroException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
