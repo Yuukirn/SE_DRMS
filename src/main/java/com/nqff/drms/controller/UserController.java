@@ -1,12 +1,11 @@
 package com.nqff.drms.controller;
 
-import com.nqff.drms.middleware.JWTUtils;
+import com.nqff.drms.middleware.JwtUtils;
 import com.nqff.drms.pojo.User;
 import com.nqff.drms.service.EmailService;
 import com.nqff.drms.service.UserService;
 import com.nqff.drms.utils.RandomCode;
 import com.nqff.drms.utils.Result;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
@@ -71,8 +70,14 @@ public class UserController {
         if (!Objects.equals(md5_pwd, user.getPassword())) {
             return Result.FAIL("wrong password", null);
         }
+        String redis_key = email + "_token";
+        String token = null;
+        if (redisTemplate.opsForValue().get(redis_key) == null) {
+            token = JwtUtils.sign(email, user.getPassword());
+            redisTemplate.opsForValue().set(redis_key, token, JwtUtils.EXPIRE_TIME / 4 * 3, TimeUnit.MILLISECONDS);
+        }
 
-        return Result.SUCCESS(JWTUtils.sign(email, user.getPassword()));
+        return Result.SUCCESS(token);
     }
 
     @GetMapping(path = "/user/{id}")
@@ -85,7 +90,6 @@ public class UserController {
     }
 
     @GetMapping(path = "/user")
-    @RequiresAuthentication
     public Result<List<User>> getAllUsers() {
         List<User> users = userService.selectAllUsers();
         if (users == null || users.size() == 0) {

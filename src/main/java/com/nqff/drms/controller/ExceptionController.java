@@ -1,6 +1,7 @@
 package com.nqff.drms.controller;
 
 import com.nqff.drms.utils.Result;
+import io.jsonwebtoken.JwtException;
 import org.apache.shiro.ShiroException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 public class ExceptionController {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(ShiroException.class)
-    public Result handle401(ShiroException e) {
+    @ExceptionHandler(JwtException.class)
+    public Result handle401(JwtException e) {
         return new Result(401, e.getMessage(), null);
     }
 

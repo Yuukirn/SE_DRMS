@@ -16,10 +16,7 @@ spring:
     password: ${QQ_EMAIL_CODE}
     default-encoding: UTF-8
 
-
-
 mybatis:
   mapper-locations: com.nqff.drms.mapper/*
   configuration:
     map-underscore-to-camel-case: true
-

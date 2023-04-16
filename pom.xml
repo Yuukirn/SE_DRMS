@@ -50,17 +50,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-spring -->
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-spring</artifactId>
-			<version>1.11.0</version>
-		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.apache.shiro</groupId>-->
-<!--			<artifactId>shiro-spring-boot-web-starter</artifactId>-->
-<!--			<version>1.11.0</version>-->
-<!--		</dependency>-->
+
 		<!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
 		<dependency>
 			<groupId>com.auth0</groupId>
