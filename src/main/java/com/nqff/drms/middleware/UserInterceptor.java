@@ -21,14 +21,6 @@ public class UserInterceptor implements HandlerInterceptor {
         UserInterceptor.userService = service;
     }
 
-
-    private static RedisTemplate<String, String> redisTemplate;
-
-    @Autowired
-    public void setRedisTemplate(RedisTemplate<String, String> redisTemplate) {
-        UserInterceptor.redisTemplate = redisTemplate;
-    }
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws JwtException {
         String token = request.getHeader("Authorization");
@@ -36,17 +28,8 @@ public class UserInterceptor implements HandlerInterceptor {
             throw new JwtException("no token");
         }
         token = token.substring(7);
-//        System.out.println("get token: " + token.length());
         String email = JwtUtils.getUserEmail(token);
         User user = userService.selectUserByEmail(email);
-//        String true_token = redisTemplate.opsForValue().get(user.getEmail() + "_token");
-//        System.out.println(true_token);
-//        System.out.println(token);
-//        if (Objects.equals(true_token, token)) {
-//            System.out.println("same!!");
-//        } else {
-//            System.out.println("not same!!");
-//        }
         if (user == null) {
             throw new JwtException("no user");
         }

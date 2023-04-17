@@ -85,9 +85,7 @@ public class UserController {
         String redis_key = email + "_token";
         String token = null;
         if (redisTemplate.opsForValue().get(redis_key) == null) {
-            token = JwtUtils.sign(email, user.getPassword());
-            // TODO
-//            System.out.println("true token: " + token.length());
+            token = JwtUtils.sign(email, md5_pwd);
             redisTemplate.opsForValue().set(redis_key, token, JwtUtils.EXPIRE_TIME / 4 * 3, TimeUnit.MILLISECONDS);
         }
 
