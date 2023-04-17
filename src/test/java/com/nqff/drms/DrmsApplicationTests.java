@@ -46,14 +46,13 @@ class DrmsApplicationTests {
 	void mpWhereTest() {
 		String email = null;
 		LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-//		wrapper.eq(User::getEmail, email);
 		wrapper.eq(false, User::getEmail, null);
 		System.out.println(userDao.selectList(wrapper));
 	}
 
 	@Test
 	void selectAllUserTest() throws IOException {
-		System.out.println(userService.selectAllUsers());
+		System.out.println(userService.list());
 	}
 
 	@Test
