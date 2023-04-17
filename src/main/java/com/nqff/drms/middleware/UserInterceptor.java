@@ -6,8 +6,11 @@ import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+import java.util.Objects;
 
 @Component
 public class UserInterceptor implements HandlerInterceptor {
@@ -24,6 +27,7 @@ public class UserInterceptor implements HandlerInterceptor {
         if (token == null || token.equals("")) {
             throw new JwtException("no token");
         }
+        token = token.substring(7);
         String email = JwtUtils.getUserEmail(token);
         User user = userService.selectUserByEmail(email);
         if (user == null) {
