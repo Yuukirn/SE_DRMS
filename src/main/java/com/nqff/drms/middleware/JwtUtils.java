@@ -21,6 +21,7 @@ public class JwtUtils {
     public static boolean verify(String token, String email, String secret) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
+            System.out.println(secret);
             JWT.require(algorithm).withClaim("email", email).build().verify(token);
             return true;
         } catch (Exception e) {
