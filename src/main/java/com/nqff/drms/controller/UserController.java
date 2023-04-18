@@ -8,10 +8,6 @@ import com.nqff.drms.service.UserService;
 import com.nqff.drms.utils.RandomCode;
 import com.nqff.drms.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -85,7 +80,7 @@ public class UserController {
         String redis_key = email + "_token";
         String token = null;
         if (redisTemplate.opsForValue().get(redis_key) == null) {
-            token = JwtUtils.sign(email, md5_pwd);
+            token = JwtUtils.sign(email);
             redisTemplate.opsForValue().set(redis_key, token, JwtUtils.EXPIRE_TIME / 4 * 3, TimeUnit.MILLISECONDS);
         }
 
@@ -93,9 +88,9 @@ public class UserController {
     }
 
     @Operation(summary = "根据 id 获取用户信息", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping(path = "/user/{id}")
+    @GetMapping(path = "/users/{id}")
     public Result<User> getUserById(@PathVariable Integer id) {
-        User user = userService.selectUserById(id);
+        User user = userService.getById(id);
         if (user == null) {
             return Result.FAIL("not found", null);
         }
@@ -103,9 +98,9 @@ public class UserController {
     }
 
     @Operation(summary = "获取所有用户信息", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping(path = "/user")
+    @GetMapping(path = "/users")
     public Result<List<User>> getAllUsers() {
-        List<User> users = userService.selectAllUsers();
+        List<User> users = userService.list();
         if (users == null || users.size() == 0) {
             return Result.FAIL("not found", null);
         }
@@ -113,9 +108,16 @@ public class UserController {
     }
 
     @Operation(summary = "根据 id 删除用户", security = {@SecurityRequirement(name = "Authorization")})
-    @DeleteMapping(path = "/user/{id}")
+    @DeleteMapping(path = "/users/{id}")
     public Result deleteUserById(@PathVariable Integer id) {
-        userService.deleteUserById(id);
+        userService.removeById(id);
+        return Result.SUCCESS(null);
+    }
+
+    @Operation(summary = "更新用户数据", security = {@SecurityRequirement(name = "Authorization")})
+    @PutMapping(path = "/users")
+    public Result updateUserInfo(@RequestBody User user) {
+        userService.updateById(user);
         return Result.SUCCESS(null);
     }
 }

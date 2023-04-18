@@ -39,7 +39,7 @@ class DrmsApplicationTests {
 
 	@Test
 	void mpDeleteTest() {
-		userDao.deleteById(2);
+		userDao.deleteById(3);
 	}
 
 	@Test
@@ -53,19 +53,17 @@ class DrmsApplicationTests {
 
 	@Test
 	void selectAllUserTest() throws IOException {
-		System.out.println(userService.selectAllUsers());
+		System.out.println(userService.list());
 	}
 
 	@Test
 	void selectUserByEmailTest() throws IOException {
-		User user = userService.selectUserByEmail("928196210@qq.com");
+		User user = userService.selectUserByEmail("111@111.com");
 		System.out.println(user);
 	}
 
 	@Test
 	void userExistTest() throws IOException {
-//		User user = userMapper.selectUserByEmail("123456@123.com");
-//		System.out.println(user);
 		boolean res = userService.isUserExisted("928196210@qq.com");
 		System.out.println(res);
 	}

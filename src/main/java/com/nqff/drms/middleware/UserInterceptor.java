@@ -1,5 +1,7 @@
 package com.nqff.drms.middleware;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.nqff.drms.dao.UserDao;
 import com.nqff.drms.pojo.User;
 import com.nqff.drms.service.UserService;
 import io.jsonwebtoken.JwtException;
@@ -10,16 +12,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
 public class UserInterceptor implements HandlerInterceptor {
-    private static UserService userService;
-
-    @Autowired
-    public void setUserService(UserService service) {
-        UserInterceptor.userService = service;
-    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws JwtException {
@@ -29,11 +26,8 @@ public class UserInterceptor implements HandlerInterceptor {
         }
         token = token.substring(7);
         String email = JwtUtils.getUserEmail(token);
-        User user = userService.selectUserByEmail(email);
-        if (user == null) {
-            throw new JwtException("no user");
-        }
-        if (!JwtUtils.verify(token, email, user.getPassword())) {
+
+        if (!JwtUtils.verify(token, email)) {
             throw new JwtException("token expire");
         }
 
