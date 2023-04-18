@@ -8,10 +8,6 @@ import com.nqff.drms.service.UserService;
 import com.nqff.drms.utils.RandomCode;
 import com.nqff.drms.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -65,7 +60,7 @@ public class UserController {
         String md5_pwd = DigestUtils.md5DigestAsHex(password.getBytes(StandardCharsets.UTF_8));
         String name = (String)request.get("name");
         User user = new User(name, email, md5_pwd);
-        userService.update(user, null);
+        userService.insertUser(user);
         return Result.SUCCESS(null);
     }
 

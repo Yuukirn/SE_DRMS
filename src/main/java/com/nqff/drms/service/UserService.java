@@ -14,5 +14,7 @@ public interface UserService extends IService<User> {
 
     User selectUserByEmail(String email);
 
+    void insertUser(User user);
+
     // TODO: page
 }

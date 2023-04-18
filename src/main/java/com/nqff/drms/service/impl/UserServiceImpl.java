@@ -33,4 +33,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         }
         return users.get(0);
     }
+
+    @Override
+    public void insertUser(User user) {
+        userDao.insert(user);
+    }
 }
