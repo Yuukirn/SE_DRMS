@@ -20,7 +20,13 @@ public class Result<T> {
         return new Result(200, "ok", data);
     }
 
+    public static <T> Result SUCCESS() {
+        return new Result(200, "ok", null);
+    }
+
     public static <T> Result FAIL(String msg, T data) {
         return new Result(200, msg, data);
     }
+
+    public static <T> Result FAIL(String msg) { return new Result(200, msg, null); }
 }
