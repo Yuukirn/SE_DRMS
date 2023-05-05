@@ -6,6 +6,6 @@ import com.nqff.drms.pojo.Category;
 import java.util.List;
 
 public interface CategoryService extends IService<Category> {
-//    void insertCategory(Category category);
-    List<Category> testFunc(int uid, int pid);
+    void insertCategory(Category category);
+    List<Category> selectCategoryByUserIdAndProjectId(int uid, int pid);
 }

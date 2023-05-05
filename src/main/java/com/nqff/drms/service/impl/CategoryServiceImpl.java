@@ -13,13 +13,13 @@ import java.util.List;
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, Category> implements CategoryService {
     @Autowired
     private CategoryDao categoryDao;
-//    @Override
-//    public void insertCategory(Category category) {
-//
-//    }
+    @Override
+    public void insertCategory(Category category) {
+        categoryDao.insert(category);
+    }
 
     @Override
-    public List<Category> testFunc(int uid,int pid){
+    public List<Category> selectCategoryByUserIdAndProjectId(int uid, int pid){
         return categoryDao.selectAllCategoryAndCaseByUserIdAndProjectId(uid,pid);
     }
 }
