@@ -11,7 +11,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/projects")
@@ -30,26 +32,20 @@ public class ProjectController {
         return Result.SUCCESS(projects);
     }
 
-//    @Operation(summary = "根据 id 获取指定项目信息", security = {@SecurityRequirement(name = "Authorization")})
-//    @GetMapping(path = "/{id}")
-//    public Result getProjectById(@PathVariable Integer id) {
-//        System.out.println(id);
-//        Project project = projectService.getById(id);
-//        if (project == null) {
-//            return Result.FAIL("not found", null);
-//        }
-//        return Result.SUCCESS(project);
-//    }
+    @Operation(summary = "根据 id 获取指定项目信息", security = {@SecurityRequirement(name = "Authorization")})
+    @GetMapping(path = "/{id}")
+    public Result getProjectById(@PathVariable Integer id) {
+        Project project = projectService.getById(id);
+        if (project == null) {
+            return Result.FAIL("not found", null);
+        }
+        return Result.SUCCESS(project);
+    }
 
     @Operation(summary = "根据关键词模糊查询项目信息", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(path = "/{name}")
     public Result getProjectByName(@PathVariable String name) {
-        LambdaQueryWrapper<Project> lqw = new LambdaQueryWrapper<Project>();
-        lqw.like(Project::getName, name);
-       List<Project> projects = projectService.getBaseMapper().selectList(lqw);
-        if (projects == null || projects.size() == 0) {
-            return Result.FAIL("not found", null);
-        }
+        List<Project> projects = projectService.selectProjectByName(name);
         return Result.SUCCESS(projects);
     }
 
@@ -71,6 +67,8 @@ public class ProjectController {
     @PostMapping(path = "/create")
     public Result createNewProject(@RequestBody Project project) {
         projectService.insertProject(project);
-        return Result.SUCCESS(null);
+        Map<String, Object> res = new HashMap<>();
+        res.put("project_id", project.getId());
+        return Result.SUCCESS(res);
     }
 }

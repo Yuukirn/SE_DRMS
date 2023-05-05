@@ -9,14 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Document {
     private Integer id;
+    private String uuid;
     private String name;
     private Byte type;
     @TableField("file_path")
     private String filePath;
-    @TableField("parent_id")
-    private Integer parentId;
-    @TableField("project_id")
-    private Integer projectId;
+    @TableField("example_id")
+    private Integer exampleId;
     @TableField("user_id")
     private Integer userId;
     @TableLogic

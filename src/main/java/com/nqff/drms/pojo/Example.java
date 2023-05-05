@@ -7,14 +7,12 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class Case {
+public class Example {
     private Integer id;
     private String name;
     private String description;
     @TableField("category_id")
     private Integer categoryId;
-    @TableField("project_id")
-    private Integer projectId;
     @TableField("user_id")
     private Integer userId;
     @TableLogic
