@@ -1,5 +1,6 @@
 package com.nqff.drms.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.nqff.drms.pojo.Project;
 import com.nqff.drms.pojo.User;
 import com.nqff.drms.service.ProjectService;
@@ -29,14 +30,27 @@ public class ProjectController {
         return Result.SUCCESS(projects);
     }
 
-    @Operation(summary = "根据 id 获取指定项目信息", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping(path = "/{id}")
-    public Result getProjectById(@PathVariable Integer id) {
-        Project project = projectService.getById(id);
-        if (project == null) {
+//    @Operation(summary = "根据 id 获取指定项目信息", security = {@SecurityRequirement(name = "Authorization")})
+//    @GetMapping(path = "/{id}")
+//    public Result getProjectById(@PathVariable Integer id) {
+//        System.out.println(id);
+//        Project project = projectService.getById(id);
+//        if (project == null) {
+//            return Result.FAIL("not found", null);
+//        }
+//        return Result.SUCCESS(project);
+//    }
+
+    @Operation(summary = "根据关键词模糊查询项目信息", security = {@SecurityRequirement(name = "Authorization")})
+    @GetMapping(path = "/{name}")
+    public Result getProjectByName(@PathVariable String name) {
+        LambdaQueryWrapper<Project> lqw = new LambdaQueryWrapper<Project>();
+        lqw.like(Project::getName, name);
+       List<Project> projects = projectService.getBaseMapper().selectList(lqw);
+        if (projects == null || projects.size() == 0) {
             return Result.FAIL("not found", null);
         }
-        return Result.SUCCESS(project);
+        return Result.SUCCESS(projects);
     }
 
     @Operation(summary = "根据 id 删除项目", security = {@SecurityRequirement(name = "Authorization")})
