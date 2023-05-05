@@ -7,15 +7,12 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class Document {
+public class Example {
     private Integer id;
-    private String uuid;
     private String name;
-    private Byte type;
-    @TableField("file_path")
-    private String filePath;
-    @TableField("example_id")
-    private Integer exampleId;
+    private String description;
+    @TableField("category_id")
+    private Integer categoryId;
     @TableField("user_id")
     private Integer userId;
     @TableLogic

@@ -5,19 +5,19 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
-public class Document {
+public class Category {
     private Integer id;
-    private String uuid;
     private String name;
-    private Byte type;
-    @TableField("file_path")
-    private String filePath;
-    @TableField("example_id")
-    private Integer exampleId;
+    @TableField("project_id")
+    private Integer projectId;
     @TableField("user_id")
     private Integer userId;
+    @TableField(exist = false)
+    private List<Plan> plans;
     @TableLogic
     private Integer deleted;
 }

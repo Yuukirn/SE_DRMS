@@ -11,11 +11,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/documents")
@@ -24,6 +28,10 @@ public class DocumentController {
     private static final Byte DOC_TYPE_WORD = 1;
     private static final Byte DOC_TYPE_PDF = 2;
     private static final String DOC_PATH = FileUtils.FILE_PATH + File.separator + "docs";
+
+    @Value("${document-path}")
+    private String PATH;
+
 
     @Autowired
     private DocumentService documentService;
@@ -48,23 +56,23 @@ public class DocumentController {
         return Result.SUCCESS(document);
     }
 
-    @Operation(summary = "获取指定文件夹下的资料信息", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping
-    public Result getDocumentByParentId(@RequestParam(name = "parent_id", required = false) Integer parent_id) {
-        if (parent_id == null) {
-            List<Document> documents = documentService.list();
-            if (documents == null || documents.size() == 0) {
-                return Result.FAIL("not found", null);
-            }
-            return Result.SUCCESS(documents);
-        } else {
-            Document document = documentService.getDocumentByParentId(parent_id);
-            if (document == null) {
-                return Result.FAIL("not found", null);
-            }
-            return Result.SUCCESS(document);
-        }
-    }
+//    @Operation(summary = "获取指定文件夹下的资料信息", security = {@SecurityRequirement(name = "Authorization")})
+//    @GetMapping
+//    public Result getDocumentByParentId(@RequestParam(name = "parent_id", required = false) Integer parent_id) {
+//        if (parent_id == null) {
+//            List<Document> documents = documentService.list();
+//            if (documents == null || documents.size() == 0) {
+//                return Result.FAIL("not found", null);
+//            }
+//            return Result.SUCCESS(documents);
+//        } else {
+//            Document document = documentService.getDocumentByParentId(parent_id);
+//            if (document == null) {
+//                return Result.FAIL("not found", null);
+//            }
+//            return Result.SUCCESS(document);
+//        }
+//    }
 
     @Operation(summary = "根据 id 删除资料", security = {@SecurityRequirement(name = "Authorization")})
     @DeleteMapping(path = "/{id}")
@@ -83,14 +91,15 @@ public class DocumentController {
     @Operation(summary = "上传资料", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping("/upload")
     public Result uploadDocument(@RequestParam(value = "file") MultipartFile file,
-                         @RequestParam(value = "parent_id") Integer parent_id,
-                         @RequestParam(value = "project_id") Integer project_id,
+                         @RequestParam(value = "example_id") Integer example_id,
                          @RequestParam(value = "user_id") Integer user_id) {
+        Document document = new Document();
         try {
-            String path = "/Users/yuuki/DRMS";
+            String uuid = UUID.randomUUID().toString();
+            String path = PATH + File.separator + uuid;
             File uploadDir = new File(path);
             if (!uploadDir.exists()) {
-                uploadDir.mkdir();
+                uploadDir.mkdirs();
             }
 
             String filename = file.getOriginalFilename();
@@ -108,23 +117,24 @@ public class DocumentController {
                 type = DOC_TYPE_PDF;
             }
             file.transferTo(localFile);
-            Document document = new Document();
             document.setName(filename);
+            document.setUuid(uuid);
             document.setFilePath(localFile.getPath());
             document.setType(type);
-            document.setParentId(parent_id);
-            document.setProjectId(project_id);
+            document.setExampleId(example_id);
             document.setUserId(user_id);
             documentService.insertDocument(document);
         } catch (Exception e) {
             return Result.FAIL(e.getMessage(), null);
         }
-        return Result.SUCCESS(null);
+        Map<String, Object> res = new HashMap<>();
+        res.put("document_id", document.getId());
+        return Result.SUCCESS(res);
     }
 
-    @Operation(summary = "创建文件夹", security = {@SecurityRequirement(name = "Authorization")})
-    @PostMapping("/create-folder")
-    public Result createFolder() {
-        return null;
-    }
+//    @Operation(summary = "创建文件夹", security = {@SecurityRequirement(name = "Authorization")})
+//    @PostMapping("/create-folder")
+//    public Result createFolder() {
+//        return null;
+//    }
 }
