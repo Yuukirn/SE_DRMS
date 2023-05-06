@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface CategoryService extends IService<Category> {
     void insertCategory(Category category);
-    List<Category> selectCategoryByUserIdAndProjectId(int uid, int pid);
+    List<Category> selectAllCategoryByProjectId(int pid);
 }

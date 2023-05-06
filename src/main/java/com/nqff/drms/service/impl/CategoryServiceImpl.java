@@ -19,7 +19,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, Category> impl
     }
 
     @Override
-    public List<Category> selectCategoryByUserIdAndProjectId(int uid, int pid){
-        return categoryDao.selectAllCategoryAndCaseByUserIdAndProjectId(uid,pid);
+    public List<Category> selectAllCategoryByProjectId(int pid){
+        return categoryDao.selectAllCategoryByProjectId(pid);
     }
 }
