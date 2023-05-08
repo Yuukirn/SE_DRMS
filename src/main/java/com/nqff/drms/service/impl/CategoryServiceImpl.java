@@ -1,5 +1,6 @@
 package com.nqff.drms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nqff.drms.dao.CategoryDao;
 import com.nqff.drms.pojo.Category;
@@ -21,5 +22,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, Category> impl
     @Override
     public List<Category> selectAllCategoryByProjectId(int pid){
         return categoryDao.selectAllCategoryByProjectId(pid);
+    }
+
+    @Override
+    public List<Category> selectCategoryByNameAndPid(int pid, String name) {
+        return categoryDao.selectCategoryByNameAndPid(pid,'%'+name+'%');
     }
 }

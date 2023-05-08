@@ -8,4 +8,6 @@ import java.util.List;
 public interface CategoryService extends IService<Category> {
     void insertCategory(Category category);
     List<Category> selectAllCategoryByProjectId(int pid);
+
+    List<Category> selectCategoryByNameAndPid(int pid, String name);
 }

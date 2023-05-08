@@ -9,6 +9,6 @@ import java.io.Serializable;
 
 @Mapper
 public interface ExampleDao extends BaseMapper<Example> {
-    @Select("select * from example where category_id = #{category_id}")
+    @Select("select * from example where category_id = #{category_id} and deleted = 0")
     Example selectByCategoryId(int category_id);
 }

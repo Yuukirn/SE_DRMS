@@ -17,7 +17,7 @@ public class Category {
     @TableField("user_id")
     private Integer userId;
     @TableField(exist = false)
-    private List<Plan> plans;
+    private List<Example> examples;
     @TableLogic
     private Integer deleted;
 }
