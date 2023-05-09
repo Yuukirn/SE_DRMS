@@ -19,6 +19,8 @@ public class Example {
     private Integer userId;
     @TableField(exist = false)
     private List<Document> documents;
+    @TableField(exist = false)
+    private Long simHash;
     @TableLogic
     private Integer deleted;
 }
