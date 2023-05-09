@@ -1,6 +1,7 @@
 package com.nqff.drms;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.nqff.drms.algorithm.Algorithm;
 import com.nqff.drms.dao.UserDao;
 import com.nqff.drms.pojo.User;
 import com.nqff.drms.service.UserService;
@@ -73,5 +74,11 @@ class DrmsApplicationTests {
 		String s = "928196210@qq.com";
 		String res = redisTemplate.opsForValue().get(s);
 		System.out.println(res);
+	}
+
+	@Test
+	void getSimilarExamples(){
+		String description = "测试获取相似案例";
+		System.out.println(new Algorithm().getSimilarExample(description));
 	}
 }
