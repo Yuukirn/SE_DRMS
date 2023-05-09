@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,8 +26,8 @@ public class Algorithm {
 //    private Murmur3 murmur3;
 
     @Operation(summary = "查询相似案例", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping(path = "/{description}")
-    public Result getSimilarExample(@PathVariable String description) {
+    @PutMapping()
+    public Result getSimilarExample(@RequestBody String description) {
         List<Example> examples = selectSimilarExampleByPlanDescription(description);
         if (examples == null) {
             return Result.FAIL("not found similar example", null);
@@ -56,7 +53,7 @@ public class Algorithm {
         }
 
         long sh1 = simHash.calSimHash(description);
-//        System.out.println(sh1);
+        System.out.println(sh1);
 //        List<Example> le = exampleService.list();
         List<Example> le = exampleDao.selectList(null);
         List<Example> lsimilarE = new ArrayList<>();
@@ -68,7 +65,7 @@ public class Algorithm {
 
         for (Example e : le) {
             e.setSimhash(getSimHash(e.getDescription()));
-//            System.out.println(e.getSimhash());
+            System.out.println(e.getSimhash());
             Long sh2 = e.getSimhash();
             int dis = simHash.hamming(sh1, sh2);
             if (simHash.isSimilar(dis)) {
@@ -86,7 +83,7 @@ public class Algorithm {
             if (mSimilarExamples.get(i) != null) lsimilarE.add(mSimilarExamples.get(i).e);
 
         }
-        if (lsimilarE.get(1) != null) return lsimilarE;
+        if (lsimilarE.size() == 0) return lsimilarE;
         else return null;
     }
 }
