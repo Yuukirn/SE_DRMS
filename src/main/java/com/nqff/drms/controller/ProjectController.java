@@ -32,18 +32,18 @@ public class ProjectController {
         return Result.SUCCESS(projects);
     }
 
-//    @Operation(summary = "根据 id 获取指定项目信息", security = {@SecurityRequirement(name = "Authorization")})
-//    @GetMapping(path = "/{id}")
-//    public Result getProjectById(@PathVariable Integer id) {
-//        Project project = projectService.getById(id);
-//        if (project == null) {
-//            return Result.FAIL("not found", null);
-//        }
-//        return Result.SUCCESS(project);
-//    }
+    @Operation(summary = "根据 id 获取指定项目信息", security = {@SecurityRequirement(name = "Authorization")})
+    @GetMapping(path = "/{id}")
+    public Result getProjectById(@PathVariable Integer id) {
+        Project project = projectService.getById(id);
+        if (project == null) {
+            return Result.FAIL("not found", null);
+        }
+        return Result.SUCCESS(project);
+    }
 
     @Operation(summary = "根据关键词模糊查询项目信息", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping(path = "/{name}")
+    @GetMapping(path = "/search/{name}")
     public Result getProjectByName(@PathVariable String name) {
         List<Project> projects = projectService.selectProjectByName(name);
         return Result.SUCCESS(projects);
