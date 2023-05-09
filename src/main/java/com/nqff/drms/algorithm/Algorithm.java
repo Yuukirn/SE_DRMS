@@ -1,13 +1,10 @@
 package com.nqff.drms.algorithm;
 
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.nqff.drms.pojo.Example;
 import com.nqff.drms.service.ExampleService;
 import com.nqff.drms.utils.Result;
-import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,13 +14,13 @@ import java.util.Map;
 
 @Component
 public class Algorithm {
+    private final SimHash simHash = new SimHash(4, 3);
     private int similarExampleNumber = 3;
     @Autowired
     private ExampleService exampleService;
-    private final SimHash simHash = new SimHash(4, 3);
 //    private Murmur3 murmur3;
 
-//    @Operation (summary = "根据方案描述获得相似案例", security = {@SecurityRequirement(name = "Authorization")})
+    //    @Operation (summary = "根据方案描述获得相似案例", security = {@SecurityRequirement(name = "Authorization")})
     public Result getSimilarExample(String description) {
         List<Example> examples = selectSimilarExampleByPlanDescription(description);
         if (examples == null) {
@@ -36,6 +33,7 @@ public class Algorithm {
         class Tuple<Example, Integer> {
             Example e;
             Integer dis;
+
             public Tuple(Example e, Integer dis) {
                 this.e = e;
                 this.dis = dis;
