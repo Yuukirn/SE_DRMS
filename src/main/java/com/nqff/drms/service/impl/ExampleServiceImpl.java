@@ -26,4 +26,9 @@ public class ExampleServiceImpl extends ServiceImpl<ExampleDao, Example> impleme
         lqw.like(Example::getName, name);
         return exampleDao.selectList(lqw);
     }
+
+    @Override
+    public Example selectExampleById(int id) {
+        return exampleDao.selectExampleById(id);
+    }
 }

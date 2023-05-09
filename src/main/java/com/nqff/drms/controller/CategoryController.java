@@ -18,7 +18,7 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @Operation(summary = "根据用户id和项目id获取指定类别信息", security = {@SecurityRequirement(name = "Authorization")})
+    @Operation(summary = "根据项目id获取指定类别信息", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(path = "/{pid}")
     public Result getDocumentById(@PathVariable Integer pid) {
         List<Category> categories = categoryService.selectAllCategoryByProjectId(pid);
@@ -31,6 +31,15 @@ public class CategoryController {
     @DeleteMapping(path = "/{id}")
     public Result deleteProjectById(@PathVariable Integer id) {
         categoryService.removeById(id);
+        return Result.SUCCESS(null);
+    }
+
+    @Operation(summary = "根据数组删除类别", security = {@SecurityRequirement(name = "Authorization")})
+    @PostMapping(path = "/delete")
+    public Result deleteProjectById(@RequestBody List<Category> categories) {
+        for (Category category : categories) {
+            categoryService.removeById(category.getId());
+        }
         return Result.SUCCESS(null);
     }
 

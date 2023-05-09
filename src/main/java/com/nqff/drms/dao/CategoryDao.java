@@ -11,7 +11,7 @@ public interface CategoryDao extends BaseMapper<Category> {
     @Select("select * from `category` where project_id = #{project_id}")
     Category selectByProjectId(int project_id);
 
-    @Select("select * from `category` where user_id = #{user_id} and project_id = #{project_id} and deleted = 0")
+    @Select("select * from `category` where project_id = #{project_id} and deleted = 0")
     @Results({
             @Result(column = "id",property = "id"),
             @Result(column = "id",property = "examples",javaType = List.class,

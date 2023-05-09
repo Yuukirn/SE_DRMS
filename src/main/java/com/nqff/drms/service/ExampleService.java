@@ -9,4 +9,5 @@ public interface ExampleService extends IService<Example> {
     void insertExample(Example example);
 
     List<Example> selectExampleByName(String name);
+    Example selectExampleById(int id);
 }

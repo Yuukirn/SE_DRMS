@@ -38,7 +38,7 @@ public class ExampleController {
     @Operation(summary = "根据 id 获取指定案例信息", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(path = "/{id}")
     public Result getExampleById(@PathVariable Integer id) {
-        Example example = exampleService.getById(id);
+        Example example = exampleService.selectExampleById(id);
         if (example == null) {
             return Result.FAIL("not found", null);
         }
