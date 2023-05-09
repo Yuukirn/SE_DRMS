@@ -1,5 +1,6 @@
 package com.nqff.drms.controller;
 
+import com.nqff.drms.algorithm.Algorithm;
 import com.nqff.drms.pojo.Example;
 import com.nqff.drms.service.ExampleService;
 import com.nqff.drms.utils.Result;
@@ -18,10 +19,13 @@ import java.util.Map;
 public class ExampleController {
     @Autowired
     private ExampleService exampleService;
+    @Autowired
+    private Algorithm algorithm;
 
     @Operation(summary = "新增案例", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping(path = "/create")
     public Result createNewProject(@RequestBody Example example) {
+        example.setSimhash(algorithm.getSimHash(example.getDescription()));
         exampleService.insertExample(example);
         Map<String, Object> res = new HashMap<>();
         res.put("example_id", example.getId());
@@ -48,6 +52,7 @@ public class ExampleController {
     @Operation(summary = "更新案例信息", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping()
     public Result updateProjectInfo(@RequestBody Example example) {
+        example.setSimhash(algorithm.getSimHash(example.getDescription()));
         exampleService.updateById(example);
         return Result.SUCCESS(null);
     }

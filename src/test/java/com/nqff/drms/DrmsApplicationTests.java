@@ -24,6 +24,9 @@ class DrmsApplicationTests {
 	@Autowired
 	private UserDao userDao;
 
+	@Autowired
+	private Algorithm algorithm;
+
 	@Test
 	void mybatisplusTest() {
 		System.out.println(userDao.selectById(1));
@@ -79,6 +82,6 @@ class DrmsApplicationTests {
 	@Test
 	void getSimilarExamples(){
 		String description = "测试获取相似案例";
-		System.out.println(new Algorithm().getSimilarExample(description));
+		System.out.println(algorithm.getSimilarExample(description));
 	}
 }

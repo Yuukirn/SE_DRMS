@@ -93,7 +93,7 @@ public class SimHash {
         return new BigInteger(sb.toString(), 2).longValue();
     }
 
-    protected int hamming(Long s1, Long s2) {
+    public int hamming(Long s1, Long s2) {
         int dis = 0;
         for (int i = 0; i < bitNum; i++) {
             if ((s1 >> i & 1) != (s2 >> i & 1)) dis++;
