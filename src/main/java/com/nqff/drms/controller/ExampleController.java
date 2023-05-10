@@ -54,7 +54,6 @@ public class ExampleController {
     public Result updateProjectInfo(@RequestBody Example example) {
         example.setSimhash(algorithm.getSimHash(example.getDescription()));
         exampleService.updateById(example);
-        System.out.println(example.getId());
         return Result.SUCCESS(null);
     }
 }
