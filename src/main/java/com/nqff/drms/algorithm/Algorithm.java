@@ -19,14 +19,14 @@ import java.util.Map;
 @RequestMapping(path = "/algorithm")
 @Tag(name = "算法")
 public class Algorithm {
-    private final SimHash simHash = new SimHash(4, 3);
+    private final SimHash simHash = new SimHash(4, 20);
     private int similarExampleNumber = 3;
     @Autowired
     private ExampleDao exampleDao;
 //    private Murmur3 murmur3;
 
     @Operation(summary = "查询相似案例", security = {@SecurityRequirement(name = "Authorization")})
-    @PutMapping()
+    @GetMapping()
     public Result getSimilarExample(@RequestBody String description) {
         List<Example> examples = selectSimilarExampleByPlanDescription(description);
         if (examples == null) {
@@ -53,7 +53,7 @@ public class Algorithm {
         }
 
         long sh1 = simHash.calSimHash(description);
-        System.out.println(sh1);
+//        System.out.println(sh1);
 //        List<Example> le = exampleService.list();
         List<Example> le = exampleDao.selectList(null);
         List<Example> lsimilarE = new ArrayList<>();
@@ -65,15 +65,17 @@ public class Algorithm {
 
         for (Example e : le) {
             e.setSimhash(getSimHash(e.getDescription()));
-            System.out.println(e.getSimhash());
+//            System.out.println(e.getSimhash());
             Long sh2 = e.getSimhash();
             int dis = simHash.hamming(sh1, sh2);
             if (simHash.isSimilar(dis)) {
                 for (int i = 0; i < similarExampleNumber; i++) {
-                    if (mSimilarExamples.get(i) != null) {
+                    if (mSimilarExamples.get(i) == null) {
                         mSimilarExamples.put(i, new Tuple<>(e, dis));
+                        break;
                     } else if (dis > mSimilarExamples.get(i).dis) {
                         mSimilarExamples.put(i, new Tuple<>(e, dis));
+                        break;
                     }
                 }
             }
@@ -83,7 +85,7 @@ public class Algorithm {
             if (mSimilarExamples.get(i) != null) lsimilarE.add(mSimilarExamples.get(i).e);
 
         }
-        if (lsimilarE.size() == 0) return lsimilarE;
+        if (lsimilarE.size() != 0) return lsimilarE;
         else return null;
     }
 }
