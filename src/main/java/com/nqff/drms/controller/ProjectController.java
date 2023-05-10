@@ -43,7 +43,7 @@ public class ProjectController {
     }
 
     @Operation(summary = "根据关键词模糊查询项目信息", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping(path = "/{name}")
+    @GetMapping(path = "/search/{name}")
     public Result getProjectByName(@PathVariable String name) {
         List<Project> projects = projectService.selectProjectByName(name);
         return Result.SUCCESS(projects);

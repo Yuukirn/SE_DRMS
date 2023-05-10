@@ -1,8 +1,6 @@
 package com.nqff.drms.controller;
 
-        import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
         import com.nqff.drms.pojo.Category;
-        import com.nqff.drms.pojo.Project;
         import com.nqff.drms.service.CategoryService;
         import com.nqff.drms.utils.Result;
         import io.swagger.v3.oas.annotations.Operation;
@@ -20,12 +18,10 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @Operation(summary = "根据用户id和项目id获取指定类别信息", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping(path = "/{uid}&{pid}")
-    public Result getDocumentById(@PathVariable Integer uid ,@PathVariable Integer pid) {
-        System.out.println(uid + " " + pid);
-        List<Category> categories = categoryService.selectCategoryByUserIdAndProjectId(uid,pid);
-        System.out.println(categories.size());
+    @Operation(summary = "根据项目id获取指定类别信息", security = {@SecurityRequirement(name = "Authorization")})
+    @GetMapping(path = "/{pid}")
+    public Result getDocumentById(@PathVariable Integer pid) {
+        List<Category> categories = categoryService.selectAllCategoryByProjectId(pid);
         if (categories == null) {
             return Result.FAIL("not found", null);
         }
@@ -35,6 +31,15 @@ public class CategoryController {
     @DeleteMapping(path = "/{id}")
     public Result deleteProjectById(@PathVariable Integer id) {
         categoryService.removeById(id);
+        return Result.SUCCESS(null);
+    }
+
+    @Operation(summary = "根据数组删除类别", security = {@SecurityRequirement(name = "Authorization")})
+    @PostMapping(path = "/delete")
+    public Result deleteProjectById(@RequestBody List<Category> categories) {
+        for (Category category : categories) {
+            categoryService.removeById(category.getId());
+        }
         return Result.SUCCESS(null);
     }
 

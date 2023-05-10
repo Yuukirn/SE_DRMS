@@ -1,6 +1,8 @@
 package com.nqff.drms;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.nqff.drms.algorithm.Algorithm;
+import com.nqff.drms.controller.ExampleController;
 import com.nqff.drms.Algorithm.ESOperations;
 import com.nqff.drms.dao.UserDao;
 import com.nqff.drms.pojo.Example;
@@ -75,19 +77,5 @@ class DrmsApplicationTests {
 		String s = "928196210@qq.com";
 		String res = redisTemplate.opsForValue().get(s);
 		System.out.println(res);
-	}
-
-	@Test
-	void ESInsertTest() throws IOException {
-		Example example=new Example();
-		example.setId(1);
-		example.setName("zhangsan");
-		example.setDeleted(0);
-		example.setCategoryId(11111);
-		example.setUserId(22222);
-		example.setDescription("nb");
-
-		ESOperations esOperations=new ESOperations();
-		esOperations.ESDocInsert(example);
 	}
 }

@@ -8,13 +8,22 @@ import java.util.List;
 
 @Mapper
 public interface CategoryDao extends BaseMapper<Category> {
-    @Select("select * from `category` where project_id = #{project_id} and user_id = #{user_id}")
-    Category selectByUserIdAndProjectId(int user_id,int project_id);
+    @Select("select * from `category` where project_id = #{project_id}")
+    Category selectByProjectId(int project_id);
 
-    @Select("select * from `category` where user_id = #{user_id} and project_id = #{project_id}")
+    @Select("select * from `category` where project_id = #{project_id} and deleted = 0")
     @Results({
-            @Result(column = "{user_id = user_id,project_id = project_id,category_id = id}",property = "cases",javaType = List.class,
-            many = @Many(select = "com.nqff.drms.dao.CaseDao.selectByUserIdAndProjectIdAndCategoryId"))
+            @Result(column = "id",property = "id"),
+            @Result(column = "id",property = "examples",javaType = List.class,
+            many = @Many(select = "com.nqff.drms.dao.ExampleDao.selectByCategoryId"))
     })
-    List<Category> selectAllCategoryAndCaseByUserIdAndProjectId(int user_id,int project_id);
+    List<Category> selectAllCategoryByProjectId(int project_id);
+
+    @Select("select * from category where `name` like #{name} and project_id = #{pid} and deleted = 0")
+    @Results({
+            @Result(column = "id",property = "id"),
+            @Result(column = "id",property = "examples",javaType = List.class,
+                    many = @Many(select = "com.nqff.drms.dao.ExampleDao.selectByCategoryId"))
+    })
+    List<Category> selectCategoryByNameAndPid(int pid,String name);
 }
