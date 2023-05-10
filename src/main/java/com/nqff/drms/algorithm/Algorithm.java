@@ -7,6 +7,7 @@ import com.nqff.drms.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +27,8 @@ public class Algorithm {
 //    private Murmur3 murmur3;
 
     @Operation(summary = "查询相似案例", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping()
-    public Result getSimilarExample(@RequestBody String description) {
+    @GetMapping("/{description}")
+    public Result getSimilarExample(@PathVariable String description) {
         List<Example> examples = selectSimilarExampleByPlanDescription(description);
         if (examples == null) {
             return Result.FAIL("not found similar example", null);
