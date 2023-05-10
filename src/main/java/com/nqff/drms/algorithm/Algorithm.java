@@ -26,7 +26,7 @@ public class Algorithm {
 //    private Murmur3 murmur3;
 
     @Operation(summary = "查询相似案例", security = {@SecurityRequirement(name = "Authorization")})
-    @PutMapping()
+    @GetMapping()
     public Result getSimilarExample(@RequestBody String description) {
         List<Example> examples = selectSimilarExampleByPlanDescription(description);
         if (examples == null) {
