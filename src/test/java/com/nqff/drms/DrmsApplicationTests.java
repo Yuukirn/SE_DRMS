@@ -1,11 +1,7 @@
 package com.nqff.drms;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.nqff.drms.algorithm.Algorithm;
-import com.nqff.drms.controller.ExampleController;
-import com.nqff.drms.Algorithm.ESOperations;
 import com.nqff.drms.dao.UserDao;
-import com.nqff.drms.pojo.Example;
 import com.nqff.drms.pojo.User;
 import com.nqff.drms.service.UserService;
 import org.junit.jupiter.api.Test;

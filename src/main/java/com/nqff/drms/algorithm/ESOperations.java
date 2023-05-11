@@ -1,4 +1,4 @@
-package com.nqff.drms.Algorithm;
+package com.nqff.drms.algorithm;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
