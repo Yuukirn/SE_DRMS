@@ -1,5 +1,6 @@
 package com.nqff.drms.controller;
 
+import com.nqff.drms.algorithm.Algorithm;
 import com.nqff.drms.pojo.Plan;
 import com.nqff.drms.service.PlanService;
 import com.nqff.drms.utils.Result;
@@ -18,6 +19,14 @@ import java.util.Map;
 public class PlanController {
     @Autowired
     private PlanService planService;
+    @Autowired
+    private Algorithm algorithm;
+
+    @Operation(summary = "根据描述获取相似案例", security = {@SecurityRequirement(name = "Authorization")})
+    @GetMapping(path = "/similar/{description}")
+    public Result getSimilarExample(@PathVariable String description) {
+        return algorithm.getSimilarExample(description);
+    }
 
     @Operation(summary = "新增方案", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping(path = "/create")

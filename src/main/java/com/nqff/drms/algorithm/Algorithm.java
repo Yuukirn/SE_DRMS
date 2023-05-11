@@ -33,7 +33,7 @@ public class Algorithm {
     public Result getSimilarExample(@PathVariable String description) {
         List<Example> examples = selectSimilarExampleByPlanDescription(description);
         if (examples == null) {
-            return Result.FAIL("not found similar example", null);
+            return Result.FAIL("No similar examples found", null);
         }
         return Result.SUCCESS(examples);
     }
