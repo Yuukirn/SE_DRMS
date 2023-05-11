@@ -1,8 +1,6 @@
 package com.nqff.drms;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.nqff.drms.controller.ExampleController;
-import com.nqff.drms.controller.PlanController;
 import com.nqff.drms.dao.UserDao;
 import com.nqff.drms.pojo.User;
 import com.nqff.drms.service.UserService;
@@ -16,75 +14,64 @@ import java.io.IOException;
 @SpringBootTest
 class DrmsApplicationTests {
 
-    @Autowired
-    UserService userService;
+	@Autowired
+	UserService userService;
 
-    @Autowired
-    RedisTemplate<String, String> redisTemplate;
+	@Autowired
+	RedisTemplate<String, String> redisTemplate;
 
-    @Autowired
-    private UserDao userDao;
+	@Autowired
+	private UserDao userDao;
 
-    @Autowired
-    private PlanController planController;
+	@Test
+	void mybatisplusTest() {
+		System.out.println(userDao.selectById(1));
+	}
 
-    @Autowired
-    private ExampleController exampleController;
+	@Test
+	void mpInsertTest() {
+		User user = new User();
+		user.setEmail("111@111.com");
+		user.setPassword("12345");
+		user.setName("ttt");
+		userDao.insert(user);
+	}
 
-    @Test
-    void mybatisplusTest() {
-        System.out.println(userDao.selectById(1));
-    }
+	@Test
+	void mpDeleteTest() {
+		userDao.deleteById(3);
+	}
 
-    @Test
-    void mpInsertTest() {
-        User user = new User();
-        user.setEmail("111@111.com");
-        user.setPassword("12345");
-        user.setName("ttt");
-        userDao.insert(user);
-    }
+	@Test
+	void mpWhereTest() {
+		String email = null;
+		LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+//		wrapper.eq(User::getEmail, email);
+		wrapper.eq(false, User::getEmail, null);
+		System.out.println(userDao.selectList(wrapper));
+	}
 
-    @Test
-    void mpDeleteTest() {
-        userDao.deleteById(3);
-    }
+	@Test
+	void selectAllUserTest() throws IOException {
+		System.out.println(userService.list());
+	}
 
-    @Test
-    void mpWhereTest() {
-        String email = null;
-        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(false, User::getEmail, null);
-        System.out.println(userDao.selectList(wrapper));
-    }
+	@Test
+	void selectUserByEmailTest() throws IOException {
+		User user = userService.selectUserByEmail("111@111.com");
+		System.out.println(user);
+	}
 
-    @Test
-    void selectAllUserTest() throws IOException {
-        System.out.println(userService.list());
-    }
+	@Test
+	void userExistTest() throws IOException {
+		boolean res = userService.isUserExisted("928196210@qq.com");
+		System.out.println(res);
+	}
 
-    @Test
-    void selectUserByEmailTest() throws IOException {
-        User user = userService.selectUserByEmail("111@111.com");
-        System.out.println(user);
-    }
-
-    @Test
-    void userExistTest() throws IOException {
-        boolean res = userService.isUserExisted("928196210@qq.com");
-        System.out.println(res);
-    }
-
-    @Test
-    void getCodeTest() {
-        String s = "928196210@qq.com";
-        String res = redisTemplate.opsForValue().get(s);
-        System.out.println(res);
-    }
-
-    @Test
-    void getSimilarExamples() {
-        String description = "华中科技大学软件学院大楼项目建设内容包括9栋楼，总建筑面积109800平方米，另外，在施的项目还包括软件学院新实验室大楼。该大楼建成后将更加深入地促进华中科技大学软件学院与各个其他学院学科进行交叉研究教学，如计算机学院、人工智能与自动化学院和网安学院等都能与软件学院更加深入频繁地联系交流。";
-        System.out.println(planController.getSimilarExample(description));
-    }
+	@Test
+	void getCodeTest() {
+		String s = "928196210@qq.com";
+		String res = redisTemplate.opsForValue().get(s);
+		System.out.println(res);
+	}
 }
