@@ -7,9 +7,11 @@ import com.nqff.drms.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +57,6 @@ public class Algorithm {
 
         long sh1 = simHash.calSimHash(description);
 //        System.out.println(sh1);
-//        List<Example> le = exampleService.list();
         List<Example> le = exampleDao.selectList(null);
         List<Example> lsimilarE = new ArrayList<>();
         Map<Integer, Tuple<Example, Integer>> mSimilarExamples = new HashMap<>();
@@ -74,7 +75,10 @@ public class Algorithm {
                     if (mSimilarExamples.get(i) == null) {
                         mSimilarExamples.put(i, new Tuple<>(e, dis));
                         break;
-                    } else if (dis > mSimilarExamples.get(i).dis) {
+                    } else if (dis < mSimilarExamples.get(i).dis) {
+                        for (int j = similarExampleNumber - 1; j > i; j--) {
+                            mSimilarExamples.put(j, mSimilarExamples.get(j - 1));
+                        }
                         mSimilarExamples.put(i, new Tuple<>(e, dis));
                         break;
                     }
@@ -84,7 +88,6 @@ public class Algorithm {
 
         for (int i = 0; i < similarExampleNumber; i++) {
             if (mSimilarExamples.get(i) != null) lsimilarE.add(mSimilarExamples.get(i).e);
-
         }
         if (lsimilarE.size() != 0) return lsimilarE;
         else return null;

@@ -1,7 +1,10 @@
 package com.nqff.drms;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.nqff.drms.algorithm.Algorithm;
+import com.nqff.drms.controller.ExampleController;
 import com.nqff.drms.dao.UserDao;
+import com.nqff.drms.pojo.Example;
 import com.nqff.drms.pojo.User;
 import com.nqff.drms.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -23,10 +26,16 @@ class DrmsApplicationTests {
 	@Autowired
 	private UserDao userDao;
 
-	@Test
-	void mybatisplusTest() {
-		System.out.println(userDao.selectById(1));
-	}
+    @Autowired
+    private Algorithm algorithm;
+
+    @Autowired
+    private ExampleController exampleController;
+
+    @Test
+    void mybatisplusTest() {
+        System.out.println(userDao.selectById(1));
+    }
 
 	@Test
 	void mpInsertTest() {
@@ -46,7 +55,6 @@ class DrmsApplicationTests {
 	void mpWhereTest() {
 		String email = null;
 		LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-//		wrapper.eq(User::getEmail, email);
 		wrapper.eq(false, User::getEmail, null);
 		System.out.println(userDao.selectList(wrapper));
 	}
@@ -73,5 +81,18 @@ class DrmsApplicationTests {
 		String s = "928196210@qq.com";
 		String res = redisTemplate.opsForValue().get(s);
 		System.out.println(res);
+	}
+
+    @Test
+    void getSimilarExamples() {
+//        String description = "";
+        System.out.println(algorithm.getSimilarExample("华中科技大学软件学院大楼项目建设内容包括9栋楼，总建筑面积109800平方米，另外，在施的项目还包括软件学院新实验室大楼。该大楼建成后将更加深入地促进华中科技大学软件学院与各个其他学院学科进行交叉研究教学，如计算机学院、人工智能与自动化学院和网安学院等都能与软件学院更加深入频繁地联系交流。"));
+    }
+
+	@Test
+	void updateExample(){
+		Example example = new Example();
+		example.setDescription("测试test");
+		System.out.println(exampleController.updateProjectInfo(example));
 	}
 }
