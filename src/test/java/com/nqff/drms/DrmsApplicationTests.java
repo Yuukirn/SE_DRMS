@@ -1,10 +1,9 @@
 package com.nqff.drms;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.nqff.drms.algorithm.Algorithm;
 import com.nqff.drms.controller.ExampleController;
+import com.nqff.drms.controller.PlanController;
 import com.nqff.drms.dao.UserDao;
-import com.nqff.drms.pojo.Example;
 import com.nqff.drms.pojo.User;
 import com.nqff.drms.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -17,17 +16,17 @@ import java.io.IOException;
 @SpringBootTest
 class DrmsApplicationTests {
 
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	RedisTemplate<String, String> redisTemplate;
-
-	@Autowired
-	private UserDao userDao;
+    @Autowired
+    UserService userService;
 
     @Autowired
-    private Algorithm algorithm;
+    RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    private UserDao userDao;
+
+    @Autowired
+    private PlanController planController;
 
     @Autowired
     private ExampleController exampleController;
@@ -37,62 +36,55 @@ class DrmsApplicationTests {
         System.out.println(userDao.selectById(1));
     }
 
-	@Test
-	void mpInsertTest() {
-		User user = new User();
-		user.setEmail("111@111.com");
-		user.setPassword("12345");
-		user.setName("ttt");
-		userDao.insert(user);
-	}
+    @Test
+    void mpInsertTest() {
+        User user = new User();
+        user.setEmail("111@111.com");
+        user.setPassword("12345");
+        user.setName("ttt");
+        userDao.insert(user);
+    }
 
-	@Test
-	void mpDeleteTest() {
-		userDao.deleteById(3);
-	}
+    @Test
+    void mpDeleteTest() {
+        userDao.deleteById(3);
+    }
 
-	@Test
-	void mpWhereTest() {
-		String email = null;
-		LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-		wrapper.eq(false, User::getEmail, null);
-		System.out.println(userDao.selectList(wrapper));
-	}
+    @Test
+    void mpWhereTest() {
+        String email = null;
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(false, User::getEmail, null);
+        System.out.println(userDao.selectList(wrapper));
+    }
 
-	@Test
-	void selectAllUserTest() throws IOException {
-		System.out.println(userService.list());
-	}
+    @Test
+    void selectAllUserTest() throws IOException {
+        System.out.println(userService.list());
+    }
 
-	@Test
-	void selectUserByEmailTest() throws IOException {
-		User user = userService.selectUserByEmail("111@111.com");
-		System.out.println(user);
-	}
+    @Test
+    void selectUserByEmailTest() throws IOException {
+        User user = userService.selectUserByEmail("111@111.com");
+        System.out.println(user);
+    }
 
-	@Test
-	void userExistTest() throws IOException {
-		boolean res = userService.isUserExisted("928196210@qq.com");
-		System.out.println(res);
-	}
+    @Test
+    void userExistTest() throws IOException {
+        boolean res = userService.isUserExisted("928196210@qq.com");
+        System.out.println(res);
+    }
 
-	@Test
-	void getCodeTest() {
-		String s = "928196210@qq.com";
-		String res = redisTemplate.opsForValue().get(s);
-		System.out.println(res);
-	}
+    @Test
+    void getCodeTest() {
+        String s = "928196210@qq.com";
+        String res = redisTemplate.opsForValue().get(s);
+        System.out.println(res);
+    }
 
     @Test
     void getSimilarExamples() {
-//        String description = "";
-        System.out.println(algorithm.getSimilarExample("华中科技大学软件学院大楼项目建设内容包括9栋楼，总建筑面积109800平方米，另外，在施的项目还包括软件学院新实验室大楼。该大楼建成后将更加深入地促进华中科技大学软件学院与各个其他学院学科进行交叉研究教学，如计算机学院、人工智能与自动化学院和网安学院等都能与软件学院更加深入频繁地联系交流。"));
+        String description = "华中科技大学软件学院大楼项目建设内容包括9栋楼，总建筑面积109800平方米，另外，在施的项目还包括软件学院新实验室大楼。该大楼建成后将更加深入地促进华中科技大学软件学院与各个其他学院学科进行交叉研究教学，如计算机学院、人工智能与自动化学院和网安学院等都能与软件学院更加深入频繁地联系交流。";
+        System.out.println(planController.getSimilarExample(description));
     }
-
-	@Test
-	void updateExample(){
-		Example example = new Example();
-		example.setDescription("测试test");
-		System.out.println(exampleController.updateProjectInfo(example));
-	}
 }
