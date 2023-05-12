@@ -1,15 +1,14 @@
 package com.nqff.drms.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.nqff.drms.pojo.Document;
-import com.nqff.drms.pojo.Project;
 import com.nqff.drms.service.DocumentService;
 import com.nqff.drms.utils.FileUtils;
 import com.nqff.drms.utils.Result;
-import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,16 +34,6 @@ public class DocumentController {
     @Autowired
     private DocumentService documentService;
 
-//    @Operation(summary = "获取所有资料信息", security = {@SecurityRequirement(name = "Authorization")})
-//    @GetMapping
-//    public Result getAllDocuments() {
-//        List<Document> documents = documentService.list();
-//        if (documents == null || documents.size() == 1) {
-//            return Result.FAIL("not found", null);
-//        }
-//        return Result.SUCCESS(documents);
-//    }
-
     @Operation(summary = "根据 id 获取指定资料信息", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(path = "/{id}")
     public Result getDocumentById(@PathVariable Integer id) {
@@ -56,23 +44,26 @@ public class DocumentController {
         return Result.SUCCESS(document);
     }
 
-//    @Operation(summary = "获取指定文件夹下的资料信息", security = {@SecurityRequirement(name = "Authorization")})
-//    @GetMapping
-//    public Result getDocumentByParentId(@RequestParam(name = "parent_id", required = false) Integer parent_id) {
-//        if (parent_id == null) {
-//            List<Document> documents = documentService.list();
-//            if (documents == null || documents.size() == 0) {
-//                return Result.FAIL("not found", null);
-//            }
-//            return Result.SUCCESS(documents);
-//        } else {
-//            Document document = documentService.getDocumentByParentId(parent_id);
-//            if (document == null) {
-//                return Result.FAIL("not found", null);
-//            }
-//            return Result.SUCCESS(document);
-//        }
-//    }
+    @Operation(summary = "根据 id 下载指定资料信息", security = {@SecurityRequirement(name = "Authorization")})
+    @GetMapping(path = "/download/{id}")
+    public Result downloadDocumentById(@PathVariable Integer id, HttpServletResponse response) throws Exception {
+        Document document = documentService.getById(id);
+        if (document == null) {
+            return Result.FAIL("not found");
+        }
+
+        if(!FileUtils.getFile("attachment",document.getFilePath(),response)){
+            return Result.FAIL("not found");
+        }
+        return null;
+    }
+
+    @Operation(summary = "根据 id 预览指定资料信息", security = {@SecurityRequirement(name = "Authorization")})
+    @GetMapping(path = "/test")
+    public String test() throws Exception {
+        System.out.println("test");
+        return "test";
+    }
 
     @Operation(summary = "根据 id 删除资料", security = {@SecurityRequirement(name = "Authorization")})
     @DeleteMapping(path = "/{id}")
@@ -111,7 +102,7 @@ public class DocumentController {
             int index = filename.lastIndexOf('.');
             String ext = filename.substring(index + 1);
             Byte type = null;
-            if (ext.equals("doc")) {
+            if (ext.equals("doc") || ext.equals("docx")) {
                 type = DOC_TYPE_WORD;
             } else if (ext.equals("pdf")) {
                 type = DOC_TYPE_PDF;
@@ -132,9 +123,4 @@ public class DocumentController {
         return Result.SUCCESS(res);
     }
 
-//    @Operation(summary = "创建文件夹", security = {@SecurityRequirement(name = "Authorization")})
-//    @PostMapping("/create-folder")
-//    public Result createFolder() {
-//        return null;
-//    }
 }
