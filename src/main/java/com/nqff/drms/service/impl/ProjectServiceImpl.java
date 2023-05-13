@@ -27,4 +27,11 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectDao, Project> impleme
         lqw.like(Project::getName, name);
         return projectDao.selectList(lqw);
     }
+
+    @Override
+    public List<Project> selectProjectsByUserId(int user_id) {
+        LambdaQueryWrapper<Project> lqw = new LambdaQueryWrapper<Project>();
+        lqw.eq(Project::getUserId, user_id);
+        return projectDao.selectList(lqw);
+    }
 }

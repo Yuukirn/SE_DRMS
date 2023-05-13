@@ -22,10 +22,10 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-    @Operation(summary = "获取所有项目信息", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping
-    public Result getAllProjects() {
-        List<Project> projects = projectService.list();
+    @Operation(summary = "根据用户ID获取所有项目信息", security = {@SecurityRequirement(name = "Authorization")})
+    @GetMapping(path = "/all/{uid}")
+    public Result getAllProjectsByUserId(@PathVariable Integer uid) {
+        List<Project> projects = projectService.selectProjectsByUserId(uid);
         if (projects == null || projects.size() == 0) {
             return Result.FAIL("not found", null);
         }

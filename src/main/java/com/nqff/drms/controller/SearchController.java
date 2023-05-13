@@ -1,9 +1,9 @@
 package com.nqff.drms.controller;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.nqff.drms.pojo.Category;
+import com.nqff.drms.pojo.sub_project;
 import com.nqff.drms.pojo.Example;
-import com.nqff.drms.service.CategoryService;
+import com.nqff.drms.service.SubProjctService;
 import com.nqff.drms.service.ExampleService;
 import com.nqff.drms.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,40 +24,40 @@ import java.util.List;
 @Tag(name = "搜索接口")
 public class SearchController {
     @Autowired
-    private CategoryService categoryService;
+    private SubProjctService subProjctService;
     @Autowired
     private ExampleService exampleService;
 
     @Operation(summary = "根据关键词和项目id查找项目中包含关键词的类别和案例", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(path = "/{pid}&{name}")
     public Result getProjectByName(@PathVariable int pid,@PathVariable String name) {
-        List<Category> categories = categoryService.selectCategoryByNameAndPid(pid,name);
+        List<sub_project> categories = subProjctService.selectSubProjectByNameAndPid(pid,name);
         List<Example> tmp = exampleService.selectExampleByName(name);
-        BaseMapper<Category> baseMapper = categoryService.getBaseMapper();
+        BaseMapper<sub_project> baseMapper = subProjctService.getBaseMapper();
 
-        HashMap<Integer,Category> map = new HashMap<Integer,Category>();
-        for (Category category:categories) {
-            map.put(category.getId(),category);
+        HashMap<Integer, sub_project> map = new HashMap<Integer, sub_project>();
+        for (sub_project sub_project :categories) {
+            map.put(sub_project.getId(), sub_project);
         }
 
         for (Example example: tmp) {
-            Category category = baseMapper.selectById(example.getCategoryId());
-            if(category == null)
+            sub_project sub_project = baseMapper.selectById(example.getCategoryId());
+            if(sub_project == null)
                 continue;
-            if(category.getProjectId() == pid){
-                int id = category.getId();
+            if(sub_project.getProjectId() == pid){
+                int id = sub_project.getId();
 
                 if(map.containsKey(id)){
-                    category = map.get(id);
+                    sub_project = map.get(id);
                 }else {
-                    map.put(id, category);
-                    categories.add(category);
+                    map.put(id, sub_project);
+                    categories.add(sub_project);
                 }
 
-                List<Example> examples = category.getExamples();
+                List<Example> examples = sub_project.getExamples();
                 if(examples == null){
                     examples = new ArrayList<Example>();
-                    category.setExamples(examples);
+                    sub_project.setExamples(examples);
                 }
                 examples.add(example);
             }

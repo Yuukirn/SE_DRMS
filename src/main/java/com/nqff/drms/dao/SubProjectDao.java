@@ -1,29 +1,29 @@
 package com.nqff.drms.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.nqff.drms.pojo.Category;
+import com.nqff.drms.pojo.sub_project;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
-public interface CategoryDao extends BaseMapper<Category> {
-    @Select("select * from `category` where project_id = #{project_id}")
-    Category selectByProjectId(int project_id);
+public interface SubProjectDao extends BaseMapper<sub_project> {
+    @Select("select * from `sub_project` where project_id = #{project_id}")
+    sub_project selectByProjectId(int project_id);
 
-    @Select("select * from `category` where project_id = #{project_id} and deleted = 0")
+    @Select("select * from `sub_project` where project_id = #{project_id} and deleted = 0")
     @Results({
             @Result(column = "id",property = "id"),
             @Result(column = "id",property = "examples",javaType = List.class,
             many = @Many(select = "com.nqff.drms.dao.ExampleDao.selectByCategoryId"))
     })
-    List<Category> selectAllCategoryByProjectId(int project_id);
+    List<sub_project> selectAllSubProjectByProjectId(int project_id);
 
-    @Select("select * from category where `name` like #{name} and project_id = #{pid} and deleted = 0")
+    @Select("select * from `sub_project` where `name` like #{name} and project_id = #{pid} and deleted = 0")
     @Results({
             @Result(column = "id",property = "id"),
             @Result(column = "id",property = "examples",javaType = List.class,
                     many = @Many(select = "com.nqff.drms.dao.ExampleDao.selectByCategoryId"))
     })
-    List<Category> selectCategoryByNameAndPid(int pid,String name);
+    List<sub_project> selectSubProjectByNameAndPid(int pid, String name);
 }

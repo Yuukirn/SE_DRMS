@@ -80,17 +80,17 @@ public class UserController {
             return Result.FAIL("wrong password", null);
         }
         String redis_key = email + "_token";
-        String token = null;
+        String token = JwtUtils.sign(email);
         if (redisTemplate.opsForValue().get(redis_key) == null) {
-            token = JwtUtils.sign(email);
+//            token = JwtUtils.sign(email);
             redisTemplate.opsForValue().set(redis_key, token, JwtUtils.EXPIRE_TIME / 4 * 3, TimeUnit.MILLISECONDS);
         }
 
         Map<String, Object> res = new HashMap<>();
         res.put("user_id", db_user.getId());
-        if (token != null) {
+//        if (token != null) {
             res.put("token", token);
-        }
+//        }
 
         return Result.SUCCESS(res);
     }

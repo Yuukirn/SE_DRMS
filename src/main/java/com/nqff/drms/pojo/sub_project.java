@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class Category {
+public class sub_project {
     private Integer id;
     private String name;
     @TableField("project_id")
