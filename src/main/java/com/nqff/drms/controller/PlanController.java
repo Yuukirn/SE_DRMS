@@ -29,7 +29,7 @@ public class PlanController {
 //    }
 
     @Operation(summary = "新增方案", security = {@SecurityRequirement(name = "Authorization")})
-    @PostMapping(path = "/create")
+    @PostMapping(path = "")
     public Result createNewProject(@RequestBody Plan plan) {
         if(planService.isPlanExist(plan.getSubProjectId())){
             return Result.FAIL("this subproject has plan");

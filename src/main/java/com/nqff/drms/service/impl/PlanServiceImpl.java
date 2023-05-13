@@ -27,6 +27,13 @@ public class PlanServiceImpl extends ServiceImpl<PlanDao, Plan> implements PlanS
     @Override
     public void insertPlan(Plan plan) {
         planDao.insert(plan);
+        int plan_id = plan.getId();
+        for(Keyword keyword : plan.getKeywords()){
+            PlanKeywordRelation relation = new PlanKeywordRelation();
+            relation.setPlanId(plan_id);
+            relation.setKeywordId(keyword.getId());
+            planKeywordRelationDao.insert(relation);
+        }
     }
 
     @Override

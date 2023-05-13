@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper
 public interface PlanDao extends BaseMapper<Plan> {
-    @Select("select * from `plan` where sub_project_id = #{sub_project_id}")
+    @Select("select * from `plan` where sub_project_id = #{sub_project_id} and deleted = 0")
     @Results({
             @Result(column = "id",property = "id"),
             @Result(column = "id",property = "documents",javaType = List.class,

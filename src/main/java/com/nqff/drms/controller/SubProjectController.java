@@ -42,7 +42,7 @@ public class SubProjectController {
     }
 
     @Operation(summary = "新增子项目", security = {@SecurityRequirement(name = "Authorization")})
-    @PostMapping(path = "/create")
+    @PostMapping(path = "")
     public Result createNewProject(@RequestBody SubProject SubProject) {
         subProjectService.insertSubProject(SubProject);
         return Result.SUCCESS(null);
