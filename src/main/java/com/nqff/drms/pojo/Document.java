@@ -14,8 +14,8 @@ public class Document {
     private Byte type;
     @TableField("file_path")
     private String filePath;
-    @TableField("example_id")
-    private Integer exampleId;
+    @TableField("plan_id")
+    private Integer planId;
     @TableField("user_id")
     private Integer userId;
     @TableLogic
