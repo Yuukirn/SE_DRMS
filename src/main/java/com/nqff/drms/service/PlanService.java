@@ -9,7 +9,5 @@ public interface PlanService extends IService<Plan> {
     void insertPlan(Plan plan);
     boolean isPlanExist(int subProjectId);
     List<Plan> selectPlansByName(String name);
-    List<Plan> selectPlanByKeywordId(int keyword_id);
-    Plan selectById(int id);
-    void updatePlanById(Plan plan);
+    Plan selectPlanById(int id);
 }

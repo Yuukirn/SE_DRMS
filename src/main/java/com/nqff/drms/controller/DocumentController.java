@@ -82,7 +82,7 @@ public class DocumentController {
     @Operation(summary = "上传资料", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping("/upload")
     public Result uploadDocument(@RequestParam(value = "file") MultipartFile file,
-                         @RequestParam(value = "example_id") Integer example_id,
+                         @RequestParam(value = "plan_id") Integer plan_id,
                          @RequestParam(value = "user_id") Integer user_id) {
         Document document = new Document();
         try {
@@ -112,7 +112,7 @@ public class DocumentController {
             document.setUuid(uuid);
             document.setFilePath(localFile.getPath());
             document.setType(type);
-            document.setExampleId(example_id);
+            document.setPlanId(plan_id);
             document.setUserId(user_id);
             documentService.insertDocument(document);
         } catch (Exception e) {

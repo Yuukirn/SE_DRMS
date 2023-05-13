@@ -9,16 +9,18 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class Plan {
+public class Subproject {
     private Integer id;
     private String name;
     private String description;
-    @TableField("subproject_id")
-    private Integer subprojectId;
+    @TableField("project_id")
+    private Integer projectId;
     @TableField("user_id")
     private Integer userId;
     @TableField(exist = false)
-    private List<Document> documents;
+    private Plan plan;
+    @TableField(exist = false)
+    private List<Keyword> keywords;
     @TableLogic
     private Integer deleted;
 }

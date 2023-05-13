@@ -31,7 +31,7 @@ public class PlanController {
     @Operation(summary = "新增方案", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping(path = "")
     public Result createNewProject(@RequestBody Plan plan) {
-        if(planService.isPlanExist(plan.getSubProjectId())){
+        if(planService.isPlanExist(plan.getSubprojectId())){
             return Result.FAIL("this subproject has plan");
         }
         planService.insertPlan(plan);
@@ -50,7 +50,7 @@ public class PlanController {
     @Operation(summary = "根据 id 获取指定方案信息", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(path = "/{id}")
     public Result getPlanById(@PathVariable Integer id) {
-        Plan plan = planService.selectById(id);
+        Plan plan = planService.selectPlanById(id);
         if (plan == null) {
             return Result.FAIL("not found", null);
         }
@@ -60,7 +60,7 @@ public class PlanController {
     @Operation(summary = "更新方案信息", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping()
     public Result updateProjectInfo(@RequestBody Plan plan) {
-        planService.updatePlanById(plan);
+        planService.updateById(plan);
         return Result.SUCCESS(null);
     }
 }

@@ -11,4 +11,21 @@ public class Keyword {
     private String name;
     @TableLogic
     private Integer deleted;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj instanceof Keyword) {
+            Keyword kw = (Keyword) obj;
+            return this.id.equals(kw.getId());
+        }
+        return false;
+    }
+
 }
