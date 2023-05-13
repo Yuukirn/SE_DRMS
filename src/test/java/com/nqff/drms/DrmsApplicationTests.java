@@ -1,7 +1,6 @@
 package com.nqff.drms;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.nqff.drms.controller.ExampleController;
 import com.nqff.drms.controller.PlanController;
 import com.nqff.drms.dao.UserDao;
 import com.nqff.drms.pojo.User;

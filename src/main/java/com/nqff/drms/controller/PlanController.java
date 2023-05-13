@@ -1,6 +1,5 @@
 package com.nqff.drms.controller;
 
-import com.nqff.drms.algorithm.Algorithm;
 import com.nqff.drms.pojo.Plan;
 import com.nqff.drms.service.PlanService;
 import com.nqff.drms.utils.Result;
@@ -19,18 +18,22 @@ import java.util.Map;
 public class PlanController {
     @Autowired
     private PlanService planService;
-    @Autowired
-    private Algorithm algorithm;
 
-    @Operation(summary = "根据描述获取相似案例", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping(path = "/similar/{description}")
-    public Result getSimilarExample(@PathVariable String description) {
-        return algorithm.getSimilarExample(description);
-    }
+//    @Autowired
+//    private Algorithm algorithm;
+
+//    @Operation(summary = "根据描述获取相似案例", security = {@SecurityRequirement(name = "Authorization")})
+//    @GetMapping(path = "/similar/{description}")
+//    public Result getSimilarExample(@PathVariable String description) {
+//        return algorithm.getSimilarExample(description);
+//    }
 
     @Operation(summary = "新增方案", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping(path = "/create")
     public Result createNewProject(@RequestBody Plan plan) {
+        if(planService.isPlanExist(plan.getSubProjectId())){
+            return Result.FAIL("this subproject has plan");
+        }
         planService.insertPlan(plan);
         Map<String, Object> res = new HashMap<>();
         res.put("plan_id", plan.getId());
@@ -47,7 +50,7 @@ public class PlanController {
     @Operation(summary = "根据 id 获取指定方案信息", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(path = "/{id}")
     public Result getPlanById(@PathVariable Integer id) {
-        Plan plan = planService.getById(id);
+        Plan plan = planService.selectById(id);
         if (plan == null) {
             return Result.FAIL("not found", null);
         }
@@ -57,7 +60,7 @@ public class PlanController {
     @Operation(summary = "更新方案信息", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping()
     public Result updateProjectInfo(@RequestBody Plan plan) {
-        planService.updateById(plan);
+        planService.updatePlanById(plan);
         return Result.SUCCESS(null);
     }
 }

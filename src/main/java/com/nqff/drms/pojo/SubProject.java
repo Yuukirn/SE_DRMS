@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class sub_project {
+public class SubProject {
     private Integer id;
     private String name;
     @TableField("project_id")
@@ -17,7 +17,7 @@ public class sub_project {
     @TableField("user_id")
     private Integer userId;
     @TableField(exist = false)
-    private List<Example> examples;
+    private Plan plan;
     @TableLogic
     private Integer deleted;
 }
