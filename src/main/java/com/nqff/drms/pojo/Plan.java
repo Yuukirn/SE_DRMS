@@ -17,8 +17,6 @@ public class Plan {
     private Integer subprojectId;
     @TableField("user_id")
     private Integer userId;
-    @TableField(exist = false)
-    private List<Document> documents;
     @TableLogic
     private Integer deleted;
 }
