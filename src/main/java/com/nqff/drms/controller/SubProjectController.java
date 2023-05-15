@@ -1,5 +1,7 @@
 package com.nqff.drms.controller;
 
+        import com.nqff.drms.algorithm.Algorithm;
+        import com.nqff.drms.pojo.Plan;
         import com.nqff.drms.pojo.Subproject;
         import com.nqff.drms.service.SubprojectService;
         import com.nqff.drms.utils.Result;
@@ -56,5 +58,14 @@ public class SubProjectController {
         subProjectService.insertSubProject(SubProject);
         return Result.SUCCESS(null);
     }
+
+    @Operation(summary = "根据子项目id获取相似方案", security = {@SecurityRequirement(name = "Authorization")})
+    @GetMapping(path = "/similar/{id}")
+    public Result getSimilarPlans(@PathVariable Integer id) {
+        Algorithm algorithm = new Algorithm();
+        List<Plan> plans = algorithm.getSimilarPlans(id);
+        return Result.SUCCESS(plans);
+    }
+
 
 }

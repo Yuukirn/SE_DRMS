@@ -8,7 +8,7 @@ import java.util.*;
 public class TFIDFAnalyzer {
     static private HashSet<String> stopWordsSet;
     static private HashMap<String, Double> idfMap;
-    private double idfMedian;
+    static private double idfMedian;
 
     public TFIDFAnalyzer(HashSet<String> set, HashMap<String, Double> map, double idfMedian) {
         if (stopWordsSet == null) stopWordsSet = set;
@@ -23,7 +23,7 @@ public class TFIDFAnalyzer {
      * @param N       需要返回的关键词数
      * @return
      */
-    public List<Keyword> getKeyWord(String content, int N) {
+    public static List<Keyword> getKeyWord(String content, int N) {
         Map<String, Double> tfMap = getTFMap(content);
         List<Keyword> keywordList = new ArrayList<>();
 
@@ -54,7 +54,7 @@ public class TFIDFAnalyzer {
         return keywordList;
     }
 
-    private Map<String, Double> getTFMap(String content) {
+    private static Map<String, Double> getTFMap(String content) {
         Map<String, Double> tfMap = new HashMap<>();
         if (content == null || content == "") {
             return tfMap;

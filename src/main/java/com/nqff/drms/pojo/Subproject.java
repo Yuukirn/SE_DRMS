@@ -20,6 +20,8 @@ public class Subproject {
     @TableField(exist = false)
     private Plan plan;
     @TableField(exist = false)
+    private Long simHash;
+    @TableField(exist = false)
     private List<Keyword> keywords;
     @TableField(exist = false)
     private List<Document> documents;
