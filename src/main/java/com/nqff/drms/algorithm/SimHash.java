@@ -11,7 +11,6 @@ import java.util.List;
 public class SimHash {
     private static final int bitNum = 64;
     static private HashSet<String> stopWordsSet;
-    private static JiebaSegmenter segmenter = new JiebaSegmenter();
     private static int fracCount = 4;
     private static int hammingThresh = 20;
 
@@ -33,9 +32,10 @@ public class SimHash {
      * 计算文本的simHash值
      *
      * @param content
-     * @return
+     * @return 文本simHash值
      */
     public static Long calSimHash(String content) {
+        JiebaSegmenter segmenter = new JiebaSegmenter();
         String filterContent = content.trim().replaceAll("\\p{Punct}|\\p{Space}", "");
         List<String> segments = segmenter.sentenceProcess(filterContent);
         Integer[] weight = new Integer[bitNum];
@@ -50,6 +50,8 @@ public class SimHash {
                         weight[i] -= 1;
                     }
                 }
+            } else {
+                segments.remove(segment);
             }
         }
 

@@ -1,5 +1,6 @@
 package com.nqff.drms.algorithm;
 
+import com.nqff.drms.pojo.Keyword;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,8 @@ public class Algorithm {
     static private TFIDFAnalyzer tfidfAnalyzer;
     static private SimHash simHash;
 
+    private int KeyWordNum = 5;
+
     public Algorithm() {
         if (stopWordsSet == null) {
             stopWordsSet = new HashSet<>();
@@ -33,7 +36,7 @@ public class Algorithm {
 //            System.out.println(idfMap.entrySet());
         }
         if (tfidfAnalyzer == null) {
-            tfidfAnalyzer = new TFIDFAnalyzer(stopWordsSet, idfMap);
+            tfidfAnalyzer = new TFIDFAnalyzer(stopWordsSet, idfMap, idfMedian);
         }
         if (simHash == null) {
             simHash = new SimHash(stopWordsSet);
@@ -44,6 +47,25 @@ public class Algorithm {
         return SimHash.calSimHash(content);
     }
 
+    /**
+     * 获取文本关键字
+     *
+     * @param content
+     * @return 默认返回权重最大的5个关键字，若不足5个则返回全部关键字
+     */
+    public List<Keyword> getKeyWord(String content) {
+        return tfidfAnalyzer.getKeyWord(content, KeyWordNum);
+    }
+
+    /**
+     * 获取文本关键字
+     *
+     * @param content
+     * @param n       * @return  返回权重最大的n个关键字，若不足n个则返回全部关键字
+     */
+    public List<Keyword> getKeyWord(String content, int n) {
+        return tfidfAnalyzer.getKeyWord(content, n);
+    }
 
     /**
      * 加载停用词表
