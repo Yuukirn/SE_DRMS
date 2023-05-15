@@ -90,9 +90,7 @@ public class Algorithm {
             e.printStackTrace();
         }
     }
-<<<<<<< HEAD
-}
-=======
+
 
     /**
      * 获取文本关键字
@@ -174,4 +172,3 @@ public class Algorithm {
         return plans;
     }
 }
->>>>>>> 6178ddc1f541d362316e2803b32be1b6719e7710

@@ -108,9 +108,7 @@ public class SimHash {
         }
         return list;
     }
-<<<<<<< HEAD
-}
-=======
+
 
     private static boolean isSimilar(Subproject sp1, Subproject sp2) {
         return true;
@@ -181,4 +179,3 @@ public class SimHash {
         return plans;
     }
 }
->>>>>>> 6178ddc1f541d362316e2803b32be1b6719e7710
