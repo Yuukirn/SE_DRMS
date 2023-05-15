@@ -7,7 +7,5 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface DocumentDao extends BaseMapper<Document> {
-    @Select("select * from document where plan_id = #{plan_id} and deleted = 0")
-    Document selectByPlanId(int plan_id);
 }
 

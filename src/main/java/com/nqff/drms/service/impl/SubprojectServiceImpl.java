@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nqff.drms.dao.KeywordDao;
 import com.nqff.drms.dao.SubprojectDao;
 import com.nqff.drms.dao.SubprojectKeywordRelationDao;
+import com.nqff.drms.pojo.Document;
 import com.nqff.drms.pojo.Keyword;
 import com.nqff.drms.pojo.Subproject;
 import com.nqff.drms.pojo.SubprojectKeywordRelation;
+import com.nqff.drms.service.DocumentService;
 import com.nqff.drms.service.KeywordService;
 import com.nqff.drms.service.SubprojectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
     private SubprojectKeywordRelationDao subProjectKeywordRelationDao;
     @Autowired
     private KeywordService keywordService;
+    @Autowired
+    private DocumentService documentService;
     @Override
     public void insertSubProject(Subproject SubProject) {
         subProjectDao.insert(SubProject);
@@ -75,6 +79,7 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
             keywords.add(keywordService.getById(relation.getKeywordId()));
         }
         subproject.setKeywords(keywords);
+        subproject.setDocuments(documentService.selectDocumentsBySubprojectId(id));
         return subproject;
     }
 

@@ -24,7 +24,7 @@ import java.util.UUID;
 @Tag(name = "资料接口")
 public class DocumentController {
     private static final Byte DOC_TYPE_WORD = 1;
-    private static final Byte DOC_TYPE_PDF = 2;
+    private static final Byte DOC_TYPE_TXT = 2;
     private static final String DOC_PATH = FileUtils.FILE_PATH + File.separator + "docs";
 
     @Value("${document-path}")
@@ -82,7 +82,7 @@ public class DocumentController {
     @Operation(summary = "上传资料", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping("/upload")
     public Result uploadDocument(@RequestParam(value = "file") MultipartFile file,
-                         @RequestParam(value = "plan_id") Integer plan_id,
+                         @RequestParam(value = "subproject_id") Integer subproject_id,
                          @RequestParam(value = "user_id") Integer user_id) {
         Document document = new Document();
         try {
@@ -104,15 +104,15 @@ public class DocumentController {
             Byte type = null;
             if (ext.equals("doc") || ext.equals("docx")) {
                 type = DOC_TYPE_WORD;
-            } else if (ext.equals("pdf")) {
-                type = DOC_TYPE_PDF;
+            } else if (ext.equals("txt")) {
+                type = DOC_TYPE_TXT;
             }
             file.transferTo(localFile);
             document.setName(filename);
             document.setUuid(uuid);
             document.setFilePath(localFile.getPath());
             document.setType(type);
-            document.setPlanId(plan_id);
+            document.setSubprojectId(subproject_id);
             document.setUserId(user_id);
             documentService.insertDocument(document);
         } catch (Exception e) {

@@ -20,14 +20,11 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentDao, Document> impl
         documentDao.insert(document);
     }
 
-//    @Override
-//    public Document getDocumentByParentId(Integer parent_id) {
-//        LambdaQueryWrapper<Document> wrapper = new LambdaQueryWrapper<>();
-//        wrapper.eq(parent_id != null, Document::getParentId, parent_id);
-//        List<Document> documents = documentDao.selectList(wrapper);
-//        if (documents == null || documents.size() == 0) {
-//            return null;
-//        }
-//        return documents.get(0);
-//    }
+    @Override
+    public List<Document> selectDocumentsBySubprojectId(int subprojectId) {
+        LambdaQueryWrapper<Document> wrapper = new LambdaQueryWrapper<Document>();
+        wrapper.eq(Document::getSubprojectId,subprojectId);
+        return documentDao.selectList(wrapper);
+    }
+
 }

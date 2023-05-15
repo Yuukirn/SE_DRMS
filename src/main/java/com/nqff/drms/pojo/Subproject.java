@@ -21,6 +21,8 @@ public class Subproject {
     private Plan plan;
     @TableField(exist = false)
     private List<Keyword> keywords;
+    @TableField(exist = false)
+    private List<Document> documents;
     @TableLogic
     private Integer deleted;
 }
