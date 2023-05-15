@@ -6,9 +6,11 @@ import com.nqff.drms.dao.KeywordDao;
 import com.nqff.drms.pojo.Keyword;
 import com.nqff.drms.service.KeywordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class KeywordServiceImpl extends ServiceImpl<KeywordDao,Keyword> implements KeywordService {
     @Autowired
     private KeywordDao keywordDao;
@@ -23,7 +25,7 @@ public class KeywordServiceImpl extends ServiceImpl<KeywordDao,Keyword> implemen
         LambdaQueryWrapper<Keyword> wrapper = new LambdaQueryWrapper<Keyword>();
         wrapper.eq(Keyword::getName,name);
         List<Keyword> keywords = keywordDao.selectList(wrapper);
-        if(keywords == null)
+        if(keywords == null || keywords.size() ==0)
             return null;
         return keywords.get(0);
     }

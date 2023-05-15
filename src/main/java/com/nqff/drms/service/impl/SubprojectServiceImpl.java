@@ -7,6 +7,7 @@ import com.nqff.drms.dao.SubprojectKeywordRelationDao;
 import com.nqff.drms.pojo.Keyword;
 import com.nqff.drms.pojo.Subproject;
 import com.nqff.drms.pojo.SubprojectKeywordRelation;
+import com.nqff.drms.service.KeywordService;
 import com.nqff.drms.service.SubprojectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,16 +22,27 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
     @Autowired
     private SubprojectKeywordRelationDao subProjectKeywordRelationDao;
     @Autowired
-    private KeywordDao keywordDao;
+    private KeywordService keywordService;
     @Override
     public void insertSubProject(Subproject SubProject) {
         subProjectDao.insert(SubProject);
         int plan_id = SubProject.getId();
-        for(Keyword keyword : SubProject.getKeywords()){
-            SubprojectKeywordRelation relation = new SubprojectKeywordRelation();
-            relation.setSubProjectId(plan_id);
-            relation.setKeywordId(keyword.getId());
-            subProjectKeywordRelationDao.insert(relation);
+        List<Keyword> keywords = SubProject.getKeywords();
+        if(keywords != null && keywords.size() > 0){
+            for(Keyword keyword : keywords){
+                SubprojectKeywordRelation relation = new SubprojectKeywordRelation();
+                relation.setSubProjectId(plan_id);
+                Keyword tmp = keywordService.selectKeywordByName(keyword.getName());
+                if(tmp == null){
+                    String name = keyword.getName();
+                    tmp = new Keyword();
+                    tmp.setName(name);
+                    keywordService.getBaseMapper().insert(tmp);
+                    tmp = keywordService.selectKeywordByName(name);
+                }
+                relation.setKeywordId(tmp.getId());
+                subProjectKeywordRelationDao.insert(relation);
+            }
         }
     }
 
@@ -40,8 +52,8 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
     }
 
     @Override
-    public List<Subproject> selectSubProjectByNameAndPid(int pid, String name) {
-        return subProjectDao.selectSubProjectByNameAndPid(pid,'%'+name+'%');
+    public List<Subproject> selectSubProjectByNameAndProjectId(int pid, String name) {
+        return subProjectDao.selectSubProjectByNameAndProjectId(pid,'%'+name+'%');
     }
 
     @Override
@@ -60,7 +72,7 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
         List<SubprojectKeywordRelation> relations = subProjectKeywordRelationDao.selectBySubprojectId(subproject.getId());
         List<Keyword> keywords = new ArrayList<Keyword>();
         for(SubprojectKeywordRelation relation : relations){
-            keywords.add(keywordDao.selectById(relation.getKeywordId()));
+            keywords.add(keywordService.getById(relation.getKeywordId()));
         }
         subproject.setKeywords(keywords);
         return subproject;
@@ -88,7 +100,15 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
         for(Keyword keyword : curKeywords){
             SubprojectKeywordRelation relation = new SubprojectKeywordRelation();
             relation.setSubProjectId(subprojectId);
-            relation.setKeywordId(keyword.getId());
+            Keyword tmp = keywordService.selectKeywordByName(keyword.getName());
+            if(tmp == null){
+                String name = keyword.getName();
+                tmp = new Keyword();
+                tmp.setName(name);
+                keywordService.getBaseMapper().insert(tmp);
+                tmp = keywordService.selectKeywordByName(name);
+            }
+            relation.setKeywordId(tmp.getId());
             subProjectKeywordRelationDao.insert(relation);
         }
         updateById(subproject);

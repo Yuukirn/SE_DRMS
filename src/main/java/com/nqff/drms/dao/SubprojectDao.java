@@ -25,5 +25,5 @@ public interface SubprojectDao extends BaseMapper<Subproject> {
             @Result(column = "id",property = "plan",javaType = Plan.class,
                     one = @One(select = "com.nqff.drms.dao.PlanDao.selectBySubprojectId"))
     })
-    List<Subproject> selectSubProjectByNameAndPid(int pid, String name);
+    List<Subproject> selectSubProjectByNameAndProjectId(int pid, String name);
 }

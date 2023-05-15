@@ -12,7 +12,7 @@ package com.nqff.drms.controller;
         import java.util.List;
 
 @RestController
-@RequestMapping(path = "/sub_projects")
+@RequestMapping(path = "/subprojects")
 @Tag(name = "子项目接口")
 public class SubProjectController {
     @Autowired
@@ -51,7 +51,7 @@ public class SubProjectController {
     }
 
     @Operation(summary = "新增子项目", security = {@SecurityRequirement(name = "Authorization")})
-    @PostMapping(path = "")
+    @PostMapping()
     public Result createNewProject(@RequestBody Subproject SubProject) {
         subProjectService.insertSubProject(SubProject);
         return Result.SUCCESS(null);
