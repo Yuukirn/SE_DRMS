@@ -1,17 +1,17 @@
 package com.nqff.drms.controller;
 
-        import com.nqff.drms.algorithm.Algorithm;
-        import com.nqff.drms.pojo.Plan;
-        import com.nqff.drms.pojo.Subproject;
-        import com.nqff.drms.service.SubprojectService;
-        import com.nqff.drms.utils.Result;
-        import io.swagger.v3.oas.annotations.Operation;
-        import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-        import io.swagger.v3.oas.annotations.tags.Tag;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.web.bind.annotation.*;
+import com.nqff.drms.algorithm.Algorithm;
+import com.nqff.drms.pojo.Plan;
+import com.nqff.drms.pojo.Subproject;
+import com.nqff.drms.service.SubprojectService;
+import com.nqff.drms.utils.Result;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-        import java.util.List;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/subprojects")
@@ -19,6 +19,8 @@ package com.nqff.drms.controller;
 public class SubProjectController {
     @Autowired
     private SubprojectService subProjectService;
+    @Autowired
+    private Algorithm algorithm;
 
     @Operation(summary = "根据项目id获取指定子项目信息", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(path = "/all/{pid}")
@@ -29,6 +31,7 @@ public class SubProjectController {
         }
         return Result.SUCCESS(subprojects);
     }
+
     @Operation(summary = "根据子项目id获取指定子项目信息", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(path = "/{id}")
     public Result getDocumentById(@PathVariable Integer id) {
@@ -48,6 +51,7 @@ public class SubProjectController {
     @Operation(summary = "更新子项目信息", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping()
     public Result updateProjectInfo(@RequestBody Subproject SubProject) {
+//        SubProject.setKeywords(algorithm.getKeyWord(SubProject.getDescription()));
         subProjectService.updateSubprojectById(SubProject);
         return Result.SUCCESS(null);
     }
@@ -55,6 +59,7 @@ public class SubProjectController {
     @Operation(summary = "新增子项目", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping()
     public Result createNewProject(@RequestBody Subproject SubProject) {
+        SubProject.setKeywords(algorithm.getKeyWord(SubProject.getDescription()));
         subProjectService.insertSubProject(SubProject);
         return Result.SUCCESS(null);
     }
@@ -62,7 +67,6 @@ public class SubProjectController {
     @Operation(summary = "根据子项目id获取相似方案", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping(path = "/similar/{id}")
     public Result getSimilarPlans(@PathVariable Integer id) {
-        Algorithm algorithm = new Algorithm();
         List<Plan> plans = algorithm.getSimilarPlans(id);
         return Result.SUCCESS(plans);
     }
