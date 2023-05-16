@@ -15,4 +15,20 @@ public class SubprojectKeywordRelation {
     private Integer keywordId;
     @TableLogic
     private Integer deleted;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj instanceof SubprojectKeywordRelation) {
+            SubprojectKeywordRelation relation = (SubprojectKeywordRelation) obj;
+            return this.keywordId.equals(relation.getKeywordId()) & this.subProjectId.equals(relation.getSubProjectId());
+        }
+        return false;
+    }
 }
