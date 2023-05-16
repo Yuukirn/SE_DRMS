@@ -1,9 +1,12 @@
 package com.nqff.drms;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.nqff.drms.controller.SubProjectController;
 import com.nqff.drms.dao.UserDao;
+import com.nqff.drms.pojo.Subproject;
 import com.nqff.drms.pojo.User;
 import com.nqff.drms.service.UserService;
+import org.apache.lucene.index.DocIDMerger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +25,8 @@ class DrmsApplicationTests {
 
 	@Autowired
 	private UserDao userDao;
+	@Autowired
+	private SubProjectController subProjectController;
 
 	@Test
 	void mybatisplusTest() {
@@ -73,5 +78,15 @@ class DrmsApplicationTests {
 		String s = "928196210@qq.com";
 		String res = redisTemplate.opsForValue().get(s);
 		System.out.println(res);
+	}
+
+	@Test
+	void createSubproject(){
+		Subproject subproject = new Subproject();
+		subproject.setName("default");
+		subproject.setDescription("墨刀支持每一位用户打造自己的品牌。新增优秀创作者推荐榜单，给予创作者们更多的流量和曝光，在这里你也能快速发现自己想要的素材和作者，也可以自行发布素材作品，分享给更多人。");
+		subproject.setProjectId(32);
+		subproject.setUserId(11);
+		subProjectController.createNewProject(subproject);
 	}
 }

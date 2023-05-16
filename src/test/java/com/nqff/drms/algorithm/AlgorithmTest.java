@@ -20,6 +20,6 @@ class AlgorithmTest {
 
     @Test
     void getSimilarPlans() {
-        System.out.println(algorithm.getSimilarPlans(33));
+        System.out.println(algorithm.getSimilarPlans(55));
     }
 }
