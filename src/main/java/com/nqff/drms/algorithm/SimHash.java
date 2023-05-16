@@ -1,9 +1,11 @@
 package com.nqff.drms.algorithm;
 
 import com.huaban.analysis.jieba.JiebaSegmenter;
+import com.nqff.drms.dao.SubprojectKeywordRelationDao;
 import com.nqff.drms.pojo.Plan;
 import com.nqff.drms.pojo.Subproject;
-import com.nqff.drms.service.ProjectService;
+import com.nqff.drms.pojo.SubprojectKeywordRelation;
+import com.nqff.drms.service.PlanService;
 import com.nqff.drms.service.SubprojectService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,12 @@ public class SimHash {
     private static SimHash simHash;
     static private HashSet<String> stopWordsSet;
     static private JiebaSegmenter segmenter = new JiebaSegmenter();
-    static private ProjectService staticProjectService;
     @Autowired
     private SubprojectService subprojectService;
+    @Autowired
+    private PlanService planService;
+    @Autowired
+    private SubprojectKeywordRelationDao subprojectKeywordRelationDao;
 
     public SimHash(HashSet<String> set) {
         if (stopWordsSet == null) stopWordsSet = set;
@@ -41,7 +46,7 @@ public class SimHash {
     /**
      * 计算文本的simHash值
      *
-     * @param content
+     * @param content content
      * @return 文本simHash值
      */
     public static Long calSimHash(String content) {
@@ -109,53 +114,57 @@ public class SimHash {
         return list;
     }
 
+    private static int Distance(Plan p, Subproject sp) {
+        int SameKeyWordNum = 0;
+        List<SubprojectKeywordRelation> relationList = simHash.subprojectKeywordRelationDao.selectList(null);
 
-    private static boolean isSimilar(Subproject sp1, Subproject sp2) {
-        return true;
+        for (SubprojectKeywordRelation relation : relationList) {
+            /* 若该关键字为子项目关键字 */
+            if (relation.getDeleted() == 0 && relation.getSubProjectId() == p.getSubprojectId()) {
+                SubprojectKeywordRelation relation2 = new SubprojectKeywordRelation();
+                relation2.setKeywordId(relation.getKeywordId());
+                relation2.setSubProjectId(sp.getId());
+                for (SubprojectKeywordRelation rel : relationList) {
+                    if (rel.getDeleted() == 0 && rel.equals(relation2)) {
+                        SameKeyWordNum++;
+                    }
+                }
+            }
+        }
+        int dis = Integer.MAX_VALUE;
+        String desc1 = p.getDescription();
+        String desc2 = sp.getDescription();
+        if (desc1 == desc2) {
+            dis = 0;
+        } else if (desc1 == null || desc2 == null) {
+            dis = bitNum;
+        } else {
+            dis = hamming(calSimHash(p.getDescription()), calSimHash(sp.getDescription()));
+        }
+        dis -= SameKeyWordNum * 10;
+        return dis;
     }
 
     @PostConstruct
     public void init() {
         simHash = this;
         simHash.subprojectService = this.subprojectService;
+        simHash.planService = this.planService;
+        simHash.subprojectKeywordRelationDao = this.subprojectKeywordRelationDao;
     }
-
-//    /**
-//     * 获取相似子项目
-//     *
-//     * @param sp
-//     * @return
-//     */
-//    public List<Subproject> getSimilarSubprojects(Subproject sp) {
-//        sp.setSimHash(calSimHash(sp.getDescription()));
-//        List<Subproject> lSimSp = new ArrayList<>();
-//        List<Subproject> lSp = simHash.subprojectService.list();
-//        for (Subproject sp2 : lSp) {
-//            sp2.setSimHash(calSimHash(sp2.getDescription()));
-//            if (sp2 != sp && isSimilar(sp2.getSimHash(), sp.getSimHash())) {
-//                lSimSp.add(sp2);
-//            }
-//        }
-//        System.out.println(lSimSp);
-//        return lSimSp;
-//    }
 
     /**
      * 获取与该子项目相似的子项目下的方案
      *
-     * @param subprojects 相似子项目列表
-     * @param sp          子项目
-     * @param n           获取方案数
+     * @param sp 子项目
+     * @param n  获取方案数
      * @return 方案列表
      */
-    public List<Plan> getPlansFromProjects(List<Subproject> subprojects, Subproject sp, int n) {
+    public List<Plan> getPlansSimilarToSubproject(Subproject sp, int n) {
         Map<Plan, Integer> planMap = new HashMap<>();
         List<Plan> plans = new ArrayList<>();
-        for (Subproject subproject : subprojects) {
-            if (subproject.getPlan() == null) continue;
-            int minHamming = Integer.MAX_VALUE;
-
-            planMap.put(subproject.getPlan(), minHamming);
+        for (Plan plan : simHash.planService.list()) {
+            planMap.put(plan, Distance(plan, sp));
         }
 
         List<Map.Entry<Plan, Integer>> entryList = new ArrayList<Map.Entry<Plan, Integer>>(planMap.entrySet());
@@ -175,7 +184,7 @@ public class SimHash {
         for (Map.Entry<Plan, Integer> entry : entryList) {
             plans.add(entry.getKey());
         }
-        System.out.println(plans);
+//        System.out.println(plans);
         return plans;
     }
 }

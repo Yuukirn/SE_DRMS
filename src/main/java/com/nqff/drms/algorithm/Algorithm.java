@@ -123,15 +123,16 @@ public class Algorithm {
         if (simHash == null) {
             simHash = new SimHash(stopWordsSet);
         }
-        for (Project p : projectDao.selectList(null)) {
-
-        }
-        for (Subproject sp : subprojectService.list()) {
-            if (sp.getDescription() == null) continue;
-            sp.setKeywords(getKeyWord(sp.getDescription()));
-            sp.setSimHash(getSimHash(sp.getDescription()));
-            subprojectService.updateSubprojectById(sp);
-        }
+//        for (Project p : projectDao.selectList(null)) {
+//
+//        }
+//        for (Subproject sp : subprojectService.list()) {
+//            if (sp.getDescription() == null) continue;
+//            sp.setKeywords(getKeyWord(sp.getDescription()));
+//            sp.setSimHash(getSimHash(sp.getDescription()));
+//            subprojectService.updateSubprojectById(sp);
+//            subprojectService.selectById(sp.getId());
+//        }
     }
 
     public long getSimHash(String content) {
@@ -167,8 +168,7 @@ public class Algorithm {
      */
     public List<Plan> getSimilarPlans(int id, int n) {
         Subproject sp = subprojectService.selectById(id);
-        List<Subproject> lsp = subprojectService.list();
-        List<Plan> plans = simHash.getPlansFromProjects(lsp, sp, SimilarProjectNum);
+        List<Plan> plans = simHash.getPlansSimilarToSubproject(sp, SimilarProjectNum);
         return plans;
     }
 }
