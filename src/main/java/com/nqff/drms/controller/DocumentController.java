@@ -23,8 +23,10 @@ import java.util.UUID;
 @RequestMapping(path = "/documents")
 @Tag(name = "资料接口")
 public class DocumentController {
-    private static final Byte DOC_TYPE_WORD = 1;
-    private static final Byte DOC_TYPE_TXT = 2;
+    private static final Byte DOC_TYPE_DOC = 1;
+    private static final Byte DOC_TYPE_DOCX = 2;
+    private static final Byte DOC_TYPE_PDF = 3;
+    private static final Byte DOC_TYPE_TXT = 4;
     private static final String DOC_PATH = FileUtils.FILE_PATH + File.separator + "docs";
 
     @Value("${document-path}")
@@ -102,10 +104,14 @@ public class DocumentController {
             int index = filename.lastIndexOf('.');
             String ext = filename.substring(index + 1);
             Byte type = null;
-            if (ext.equals("doc") || ext.equals("docx")) {
-                type = DOC_TYPE_WORD;
-            } else if (ext.equals("txt")) {
-                type = DOC_TYPE_TXT;
+            switch (ext) {
+                case "doc" -> type = DOC_TYPE_DOC;
+                case "docx" -> type = DOC_TYPE_DOCX;
+                case "pdf" -> type = DOC_TYPE_PDF;
+                case "txt" -> type = DOC_TYPE_TXT;
+                default -> {
+                    return Result.FAIL("file invalidate");
+                }
             }
             file.transferTo(localFile);
             document.setName(filename);
