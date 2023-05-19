@@ -37,7 +37,7 @@ public class Keyword implements Comparable<Keyword> {
 
         if (obj instanceof Keyword) {
             Keyword kw = (Keyword) obj;
-            return this.id.equals(kw.getId());
+            return this.name.equals(kw.getName());
         }
         return false;
     }
