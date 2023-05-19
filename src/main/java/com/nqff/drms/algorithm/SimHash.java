@@ -2,12 +2,15 @@ package com.nqff.drms.algorithm;
 
 import com.huaban.analysis.jieba.JiebaSegmenter;
 import com.nqff.drms.dao.SubprojectKeywordRelationDao;
+import com.nqff.drms.pojo.Document;
 import com.nqff.drms.pojo.Plan;
 import com.nqff.drms.pojo.Subproject;
 import com.nqff.drms.pojo.SubprojectKeywordRelation;
+import com.nqff.drms.service.DocumentService;
 import com.nqff.drms.service.PlanService;
 import com.nqff.drms.service.SubprojectService;
 import jakarta.annotation.PostConstruct;
+import org.elasticsearch.core.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,19 +31,19 @@ public class SimHash {
     private PlanService planService;
     @Autowired
     private SubprojectKeywordRelationDao subprojectKeywordRelationDao;
+    @Autowired
+    private DocumentService documentService;
 
     public SimHash(HashSet<String> set) {
         if (stopWordsSet == null) stopWordsSet = set;
     }
 
     public static boolean isSimilar(long sh1, long sh2) {
-        if (hamming(sh1, sh2) < hammingThresh) return true;
-        return false;
+        return hamming(sh1, sh2) < hammingThresh;
     }
 
     public static boolean isSimilar(int dis) {
-        if (dis < hammingThresh) return true;
-        return false;
+        return dis < hammingThresh;
     }
 
     /**
@@ -114,24 +117,20 @@ public class SimHash {
         return list;
     }
 
-    private static int Distance(Plan p, Subproject sp) {
+    private static double Distance(Plan p, Subproject sp) {
         int SameKeyWordNum = 0;
-        List<SubprojectKeywordRelation> relationList = simHash.subprojectKeywordRelationDao.selectList(null);
-
-        for (SubprojectKeywordRelation relation : relationList) {
+        List<SubprojectKeywordRelation> subProRelationList = simHash.subprojectKeywordRelationDao.selectBySubprojectId(sp.getId());
+        List<SubprojectKeywordRelation> planRelationList = simHash.subprojectKeywordRelationDao.selectBySubprojectId(p.getSubprojectId());
+        for (SubprojectKeywordRelation relation : subProRelationList) {
             /* 若该关键字为子项目关键字 */
-            if (relation.getDeleted() == 0 && relation.getSubProjectId() == p.getSubprojectId()) {
-                SubprojectKeywordRelation relation2 = new SubprojectKeywordRelation();
-                relation2.setKeywordId(relation.getKeywordId());
-                relation2.setSubProjectId(sp.getId());
-                for (SubprojectKeywordRelation rel : relationList) {
-                    if (rel.getDeleted() == 0 && rel.equals(relation2)) {
-                        SameKeyWordNum++;
-                    }
+            for (SubprojectKeywordRelation relation2 : planRelationList) {
+                if (relation2.getDeleted() == 0 && relation2.getKeywordId() == relation.getKeywordId()) {
+                    SameKeyWordNum++;
+                    continue;
                 }
             }
         }
-        int dis = Integer.MAX_VALUE;
+        double dis = Integer.MAX_VALUE;
         String desc1 = p.getDescription();
         String desc2 = sp.getDescription();
         if (desc1 == desc2) {
@@ -141,7 +140,8 @@ public class SimHash {
         } else {
             dis = hamming(calSimHash(p.getDescription()), calSimHash(sp.getDescription()));
         }
-        dis -= SameKeyWordNum * 10;
+        if (dis != 0) dis *= (1 - Math.log10(SameKeyWordNum + 1));
+        System.out.println("plan id = " + p.getName() + "\n\tdis = " + dis);
         return dis;
     }
 
@@ -151,6 +151,7 @@ public class SimHash {
         simHash.subprojectService = this.subprojectService;
         simHash.planService = this.planService;
         simHash.subprojectKeywordRelationDao = this.subprojectKeywordRelationDao;
+        simHash.documentService = this.documentService;
     }
 
     /**
@@ -161,16 +162,18 @@ public class SimHash {
      * @return 方案列表
      */
     public List<Plan> getPlansSimilarToSubproject(Subproject sp, int n) {
-        Map<Plan, Integer> planMap = new HashMap<>();
+        Map<Plan, Double> planMap = new HashMap<>();
         List<Plan> plans = new ArrayList<>();
         for (Plan plan : simHash.planService.list()) {
-            planMap.put(plan, Distance(plan, sp));
+            if (plan.getUserId() == sp.getUserId()) {
+                planMap.put(plan, Distance(plan, sp));
+            }
         }
 
-        List<Map.Entry<Plan, Integer>> entryList = new ArrayList<Map.Entry<Plan, Integer>>(planMap.entrySet());
-        Collections.sort(entryList, new Comparator<Map.Entry<Plan, Integer>>() {
+        List<Map.Entry<Plan, Double>> entryList = new ArrayList<Map.Entry<Plan, Double>>(planMap.entrySet());
+        Collections.sort(entryList, new Comparator<Map.Entry<Plan, Double>>() {
             @Override
-            public int compare(Map.Entry<Plan, Integer> o1, Map.Entry<Plan, Integer> o2) {
+            public int compare(Map.Entry<Plan, Double> o1, Map.Entry<Plan, Double> o2) {
                 return o1.getValue().compareTo(o2.getValue());
             }
         });
@@ -181,10 +184,50 @@ public class SimHash {
                 entryList.remove(n);
             }
         }
-        for (Map.Entry<Plan, Integer> entry : entryList) {
+        for (Map.Entry<Plan, Double> entry : entryList) {
             plans.add(entry.getKey());
         }
 //        System.out.println(plans);
         return plans;
+    }
+
+    public List<Document> getDocuments(int subProId) {
+        List<Document> documentList = new ArrayList<>();
+        for (Document document : documentService.list()) {
+            if (document.getSubprojectId() == subProId) {
+                documentList.add(document);
+            }
+        }
+        if (documentList.size() == 0) return null;
+        return documentList;
+    }
+
+    public List<Tuple<String, Double>> getPlanWeights(List<Plan> planList, int id) {
+        List<Tuple<String, Double>> pwList = null;
+        if (planList != null) {
+            pwList = new ArrayList<>();
+            double simSum = 0;
+            for (Plan plan : planList) {
+                double dis = Distance(plan, simHash.subprojectService.getById(id));
+                double similarity = bitNum - dis;
+                simSum += similarity;
+                pwList.add(new Tuple<>(plan.getDescription(), similarity));
+            }
+            for (Tuple<String, Double> pw : pwList) {
+                pw = new Tuple<>(pw.v1(), pw.v2() / simSum);
+                System.out.println(pw);
+            }
+        }
+        return pwList;
+    }
+
+    public List<Tuple<String, Double>> getDocumentContent(int subProId) {
+        List<Tuple<String, Double>> dList = new ArrayList<>();
+        List<Document> documentList = simHash.documentService.selectDocumentsBySubprojectId(subProId);
+        for (Document document : documentList) {
+            dList.add(new Tuple<>(DocumentReader.readDocument(document), 1d / documentList.size()));
+        }
+        if (dList.size() == 0) return null;
+        return dList;
     }
 }
