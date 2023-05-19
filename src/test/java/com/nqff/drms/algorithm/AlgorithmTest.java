@@ -22,4 +22,9 @@ class AlgorithmTest {
     void getSimilarPlans() {
         System.out.println(algorithm.getSimilarPlans(55));
     }
+
+    @Test
+    void createNewPlan() {
+        System.out.println(algorithm.createNewPlan(algorithm.getSimilarPlans(55), 55));
+    }
 }
