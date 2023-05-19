@@ -95,7 +95,10 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
         for(Keyword keyword : preKeywords){
             System.out.println(keyword);
             if(!curKeywords.contains(keyword)){
-                subProjectKeywordRelationDao.deleteById(subProjectKeywordRelationDao.selectBySubprojectIdAndKeywordId(subprojectId,keyword.getId()));
+                List<SubprojectKeywordRelation> relations = subProjectKeywordRelationDao.selectBySubprojectIdAndKeywordId(subprojectId,keyword.getId());
+                for(SubprojectKeywordRelation relation : relations){
+                    subProjectKeywordRelationDao.deleteById(relation);
+                }
             }
             else {
                 curKeywords.remove(keyword);

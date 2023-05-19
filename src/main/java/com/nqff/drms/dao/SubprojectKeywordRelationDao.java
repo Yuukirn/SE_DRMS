@@ -14,5 +14,5 @@ public interface SubprojectKeywordRelationDao extends BaseMapper<SubprojectKeywo
     @Select("select * from `subproject_keyword_relation` where keyword_id = #{keyword_id} and deleted = 0")
     List<SubprojectKeywordRelation> selectByKeywordId(int keyword_id);
     @Select("select * from `subproject_keyword_relation` where keyword_id = #{keyword_id} and subproject_id = #{subprojectId} and deleted = 0")
-    SubprojectKeywordRelation selectBySubprojectIdAndKeywordId(int subprojectId,int keyword_id);
+    List<SubprojectKeywordRelation> selectBySubprojectIdAndKeywordId(int subprojectId,int keyword_id);
 }
