@@ -2,14 +2,13 @@ package com.nqff.drms.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nqff.drms.dao.KeywordDao;
+import com.nqff.drms.dao.PlanDao;
 import com.nqff.drms.dao.SubprojectDao;
 import com.nqff.drms.dao.SubprojectKeywordRelationDao;
-import com.nqff.drms.pojo.Document;
-import com.nqff.drms.pojo.Keyword;
-import com.nqff.drms.pojo.Subproject;
-import com.nqff.drms.pojo.SubprojectKeywordRelation;
+import com.nqff.drms.pojo.*;
 import com.nqff.drms.service.DocumentService;
 import com.nqff.drms.service.KeywordService;
+import com.nqff.drms.service.PlanService;
 import com.nqff.drms.service.SubprojectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +26,8 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
     private KeywordService keywordService;
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    private PlanDao planDao;
     @Override
     public void insertSubProject(Subproject SubProject) {
         subProjectDao.insert(SubProject);
@@ -73,11 +74,13 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
     @Override
     public Subproject selectById(int id) {
         Subproject subproject = subProjectDao.selectById(id);
+        Plan plan = planDao.selectBySubprojectId(id);
         List<SubprojectKeywordRelation> relations = subProjectKeywordRelationDao.selectBySubprojectId(subproject.getId());
         List<Keyword> keywords = new ArrayList<Keyword>();
         for(SubprojectKeywordRelation relation : relations){
             keywords.add(keywordService.getById(relation.getKeywordId()));
         }
+        subproject.setPlan(plan);
         subproject.setKeywords(keywords);
         subproject.setDocuments(documentService.selectDocumentsBySubprojectId(id));
         return subproject;

@@ -64,12 +64,7 @@ public class SubProjectController {
         return Result.SUCCESS(null);
     }
 
-    @Operation(summary = "根据子项目id获取相似方案", security = {@SecurityRequirement(name = "Authorization")})
-    @GetMapping(path = "/similar/{id}")
-    public Result getSimilarPlans(@PathVariable Integer id) {
-        List<Plan> plans = algorithm.getSimilarPlans(id);
-        return Result.SUCCESS(plans);
-    }
+
 
 
 }

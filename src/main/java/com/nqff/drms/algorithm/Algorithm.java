@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
 import org.elasticsearch.core.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,9 +20,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 
-@RestController
-@RequestMapping(path = "/algorithm")
-@Tag(name = "算法")
+@Service
 public class Algorithm {
     static private final int KeyWordNum = 5;
     static private final int SimilarProjectNum = 3;
@@ -178,16 +177,16 @@ public class Algorithm {
      * {w2} from curParCents.w2 <br/>
      * curCent = getMax{w2} <br/>
      *
-     * @param id 需要生成方案的子项目id
+     * @param subproject_id 需要生成方案的子项目id
      * @return
      */
-    public Plan createNewPlan(List<Plan> planList, int id) {
+    public Plan createNewPlan(List<Plan> planList, int subproject_id,int user_id) {
         Plan newPlan = new Plan();
-        String name = subprojectService.getById(id).getName() + "方案";
+        String name = subprojectService.getById(subproject_id).getName() + "方案";
         String description;
 
-        List planDescWeightList = simHash.getPlanWeights(planList, id);
-        List docContextList = simHash.getDocumentContent(id);
+        List planDescWeightList = simHash.getPlanWeights(planList, subproject_id);
+        List docContextList = simHash.getDocumentContent(subproject_id);
         String str1 = createNewContent(planDescWeightList);
         String str2 = createNewContent(docContextList);
 
@@ -206,6 +205,8 @@ public class Algorithm {
 
         newPlan.setName(name);
         newPlan.setDescription(description == null ? "" : description);
+        newPlan.setSubprojectId(subproject_id);
+        newPlan.setUserId(user_id);
         return newPlan;
     }
 
