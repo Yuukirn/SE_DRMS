@@ -1,15 +1,20 @@
 package com.nqff.drms.controller;
 
 import com.nqff.drms.algorithm.Algorithm;
+import com.nqff.drms.pojo.Document;
 import com.nqff.drms.pojo.Plan;
 import com.nqff.drms.service.PlanService;
+import com.nqff.drms.utils.FileUtils;
 import com.nqff.drms.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +54,23 @@ public class PlanController {
             return Result.FAIL("not found", null);
         }
         return Result.SUCCESS(plan);
+    }
+    @Operation(summary = "根据 id 导出指定方案", security = {@SecurityRequirement(name = "Authorization")})
+    @GetMapping(path = "/export/{id}")
+    public Result downloadDocumentById(@PathVariable Integer id, HttpServletResponse response) throws Exception {
+        Plan plan = planService.getById(id);
+        if (plan == null) {
+            return Result.FAIL("not found");
+        }
+        String description = plan.getDescription();
+        if(description == null){
+            description = "";
+        }
+        String file ="方案描述：\n" + description;
+        ServletOutputStream os = response.getOutputStream();
+        byte[] b = file.getBytes();
+        os.write(b, 0, b.length);
+        return null;
     }
 
     @Operation(summary = "更新方案信息", security = {@SecurityRequirement(name = "Authorization")})
