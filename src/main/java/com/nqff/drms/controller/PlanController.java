@@ -34,7 +34,7 @@ public class PlanController {
         if(planService.isPlanExist(subproject_id)){
             return Result.FAIL("this subproject has plan");
         }
-        Plan plan = algorithm.createNewPlan(plans,subproject_id,user_id);
+        Plan plan = algorithm.generateNewPlan(plans,subproject_id,user_id);
         planService.insertPlan(plan);
         return Result.SUCCESS(null);
     }

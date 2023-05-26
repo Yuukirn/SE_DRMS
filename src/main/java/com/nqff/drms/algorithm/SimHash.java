@@ -10,7 +10,8 @@ import com.nqff.drms.service.DocumentService;
 import com.nqff.drms.service.PlanService;
 import com.nqff.drms.service.SubprojectService;
 import jakarta.annotation.PostConstruct;
-import org.elasticsearch.core.Tuple;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -202,8 +203,8 @@ public class SimHash {
         return documentList;
     }
 
-    public List<Tuple<String, Double>> getPlanWeights(List<Plan> planList, int id) {
-        List<Tuple<String, Double>> pwList = null;
+    public List<Pair<String, Double>> getPlanWeights(List<Plan> planList, int id) {
+        List<Pair<String, Double>> pwList = null;
         if (planList != null) {
             pwList = new ArrayList<>();
             double simSum = 0;
@@ -211,21 +212,21 @@ public class SimHash {
                 double dis = Distance(plan, simHash.subprojectService.getById(id));
                 double similarity = bitNum - dis;
                 simSum += similarity;
-                pwList.add(new Tuple<>(plan.getDescription(), similarity));
+                pwList.add(new MutablePair<>(plan.getDescription(), similarity));
             }
-            for (Tuple<String, Double> pw : pwList) {
-                pw = new Tuple<>(pw.v1(), pw.v2() / simSum);
-                System.out.println(pw);
+            for (Pair<String, Double> pw : pwList) {
+                pw.setValue(pw.getValue() / simSum);
+//                System.out.println(pw);
             }
         }
         return pwList;
     }
 
-    public List<Tuple<String, Double>> getDocumentContent(int subProId) {
-        List<Tuple<String, Double>> dList = new ArrayList<>();
+    public List<Pair<String, Double>> getDocumentContent(int subProId) {
+        List<Pair<String, Double>> dList = new ArrayList<>();
         List<Document> documentList = simHash.documentService.selectDocumentsBySubprojectId(subProId);
         for (Document document : documentList) {
-            dList.add(new Tuple<>(DocumentReader.readDocument(document), 1d / documentList.size()));
+            dList.add(new MutablePair<>(DocumentReader.readDocument(document), 1d / documentList.size()));
         }
         if (dList.size() == 0) return null;
         return dList;

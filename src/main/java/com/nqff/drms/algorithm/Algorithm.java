@@ -5,13 +5,11 @@ import com.nqff.drms.pojo.Keyword;
 import com.nqff.drms.pojo.Plan;
 import com.nqff.drms.pojo.Subproject;
 import com.nqff.drms.service.SubprojectService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
-import org.elasticsearch.core.Tuple;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -134,7 +132,7 @@ public class Algorithm {
     /**
      * 获取文本关键字
      *
-     * @return  返回权重最大的n个关键字，若不足n个则返回全部关键字
+     * @return 返回权重最大的n个关键字，若不足n个则返回全部关键字
      */
     public List<Keyword> getKeyWord(String content, int n) {
         return tfidfAnalyzer.getKeyWord(content, n);
@@ -180,7 +178,7 @@ public class Algorithm {
      * @param subproject_id 需要生成方案的子项目id
      * @return
      */
-    public Plan createNewPlan(List<Plan> planList, int subproject_id,int user_id) {
+    public Plan generateNewPlan(List<Plan> planList, int subproject_id, int user_id) {
         Plan newPlan = new Plan();
         String name = subprojectService.getById(subproject_id).getName() + "方案";
         String description;
@@ -189,7 +187,6 @@ public class Algorithm {
         List docContextList = simHash.getDocumentContent(subproject_id);
         String str1 = createNewContent(planDescWeightList);
         String str2 = createNewContent(docContextList);
-
         if (str1 == null) {
             description = str2;
         } else {
@@ -197,8 +194,8 @@ public class Algorithm {
                 description = str1;
             } else {
                 List strList = new ArrayList<>();
-                strList.add(new Tuple<>(str1, 0.5));
-                strList.add(new Tuple<>(str2, 0.5));
+                strList.add(new ImmutablePair<>(str1, 0.5));
+                strList.add(new ImmutablePair<>(str2, 0.5));
                 description = createNewContent(strList);
             }
         }
@@ -211,7 +208,7 @@ public class Algorithm {
     }
 
 
-    private String createNewContent(List<Tuple<String, Double>> cwList) {
-        return null;
+    private String createNewContent(List<ImmutablePair<String, Double>> cwList) {
+        return TextGenerator.generate(cwList);
     }
 }
