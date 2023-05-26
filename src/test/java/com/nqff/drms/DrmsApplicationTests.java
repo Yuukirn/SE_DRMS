@@ -6,7 +6,6 @@ import com.nqff.drms.dao.UserDao;
 import com.nqff.drms.pojo.Subproject;
 import com.nqff.drms.pojo.User;
 import com.nqff.drms.service.UserService;
-import org.apache.lucene.index.DocIDMerger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
