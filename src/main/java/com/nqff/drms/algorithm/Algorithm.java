@@ -7,14 +7,20 @@ import com.nqff.drms.pojo.Subproject;
 import com.nqff.drms.service.SubprojectService;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.*;
 
 
@@ -40,7 +46,7 @@ public class Algorithm {
     private static void loadStopWords(Set<String> set, InputStream in) {
         BufferedReader bufr;
         try {
-            bufr = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            bufr = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             String line = null;
             while ((line = bufr.readLine()) != null) {
                 set.add(line.trim());
@@ -179,14 +185,15 @@ public class Algorithm {
      * @return
      */
     public Plan generateNewPlan(List<Plan> planList, int subproject_id, int user_id) {
+//        System.out.println(planList);
         Plan newPlan = new Plan();
         String name = subprojectService.getById(subproject_id).getName() + "方案";
         String description;
 
         List planDescWeightList = simHash.getPlanWeights(planList, subproject_id);
         List docContextList = simHash.getDocumentContent(subproject_id);
-        String str1 = createNewContent(planDescWeightList);
-        String str2 = createNewContent(docContextList);
+        String str1 = createNewContent(planDescWeightList, subproject_id, user_id);
+        String str2 = createNewContent(docContextList, subproject_id, user_id);
         if (str1 == null) {
             description = str2;
         } else {
@@ -196,7 +203,7 @@ public class Algorithm {
                 List strList = new ArrayList<>();
                 strList.add(new ImmutablePair<>(str1, 0.5));
                 strList.add(new ImmutablePair<>(str2, 0.5));
-                description = createNewContent(strList);
+                description = createNewContent(strList, subproject_id, user_id);
             }
         }
 
@@ -208,7 +215,57 @@ public class Algorithm {
     }
 
 
-    private String createNewContent(List<ImmutablePair<String, Double>> cwList) {
-        return TextGenerator.generate(cwList);
+    private String createNewContent(List<MutablePair<String, Double>> cwList, int subproject_id, int user_id) {
+        String desc = algorithm.subprojectService.selectById(subproject_id).getDescription();
+        /* 每个文本每段每句权重 */
+        List<Tuple2<Map<Integer, List<MutablePair<String, Double>>>, Double>> contentsSentencesWeightListToSubproject = new ArrayList<>();
+
+        for (Pair<String, Double> cw : cwList) {
+            /* 当前文本的每段每句 */
+            Map<Integer, List<MutablePair<String, Double>>> parSentsMap = new HashMap<>();
+            int parN = 1;   // 当前段落数
+            int disSum = 0;
+            String content = cw.getLeft();
+            double w = cw.getRight();   // 当前文本总体权重
+            CharacterIterator characterIterator = new StringCharacterIterator(content);
+            do {
+                char c = characterIterator.current();
+                while (c == '\n') c = characterIterator.next();
+                if (c != '\uFFFF') parSentsMap.put(parN++, new ArrayList<>());
+                while (c != '\n' && c != '\uFFFF') {
+                    StringBuilder sb = new StringBuilder();
+                    while (c != '.' && c != '。' && c != '\n' && c != '\0' && c != '\uFFFF' && c != '\r' && c != '?' && c != '!' && c != '？' && c != '！') {
+                        sb.append(c);
+                        c = characterIterator.next();
+                    }
+                    if (c == '.') {
+                        c = characterIterator.next();
+                        while (c == '.') {
+                            sb.append(c);
+                            c = characterIterator.next();
+                        }
+                        c = characterIterator.previous();
+                    }
+                    if (c == '\r') c = characterIterator.next();
+                    if (!(c == '\uFFFF' || c == '\n')) sb.append(c);
+                    if (c != '\uFFFF' && c != '\n') c = characterIterator.next();
+                    String str = sb.toString();
+                    if (str.charAt(0) == '\0') continue;
+                    int d = simHash.Distance(str, desc);
+                    disSum += d;
+                    parSentsMap.get(parN - 1).add(new MutablePair<>(str, (double) d));
+                }
+            } while (characterIterator.current() != '\uFFFF');
+
+            for (List<MutablePair<String, Double>> pairList : parSentsMap.values()) {
+                for (MutablePair<String, Double> pair : pairList) {
+                    pair.setValue(w * pair.getValue() / disSum);
+                }
+            }
+//            System.out.println(parSentsMap);
+            contentsSentencesWeightListToSubproject.add(Tuples.of(parSentsMap, w));
+        }
+//        System.out.println(contentsSentencesWeightListToSubproject);
+        return TextGenerator.generate(contentsSentencesWeightListToSubproject);
     }
 }
