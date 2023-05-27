@@ -25,6 +25,7 @@ class AlgorithmTest {
 
     @Test
     void createNewPlan() {
+//        System.out.println(algorithm.generateNewPlan(algorithm.getSimilarPlans(55), 55, 11));
         System.out.println(algorithm.generateNewPlan(algorithm.getSimilarPlans(55), 55, 11));
     }
 }
