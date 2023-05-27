@@ -220,51 +220,54 @@ public class Algorithm {
         /* 每个文本每段每句权重 */
         List<Tuple2<Map<Integer, List<MutablePair<String, Double>>>, Double>> contentsSentencesWeightListToSubproject = new ArrayList<>();
 
-        for (Pair<String, Double> cw : cwList) {
-            /* 当前文本的每段每句 */
-            Map<Integer, List<MutablePair<String, Double>>> parSentsMap = new HashMap<>();
-            int parN = 1;   // 当前段落数
-            int disSum = 0;
-            String content = cw.getLeft();
-            double w = cw.getRight();   // 当前文本总体权重
-            CharacterIterator characterIterator = new StringCharacterIterator(content);
-            do {
-                char c = characterIterator.current();
-                while (c == '\n') c = characterIterator.next();
-                if (c != '\uFFFF') parSentsMap.put(parN++, new ArrayList<>());
-                while (c != '\n' && c != '\uFFFF') {
-                    StringBuilder sb = new StringBuilder();
-                    while (c != '.' && c != '。' && c != '\n' && c != '\0' && c != '\uFFFF' && c != '\r' && c != '?' && c != '!' && c != '？' && c != '！') {
-                        sb.append(c);
-                        c = characterIterator.next();
-                    }
-                    if (c == '.') {
-                        c = characterIterator.next();
-                        while (c == '.') {
+        if(cwList != null){
+            for (Pair<String, Double> cw : cwList) {
+                /* 当前文本的每段每句 */
+                Map<Integer, List<MutablePair<String, Double>>> parSentsMap = new HashMap<>();
+                int parN = 1;   // 当前段落数
+                int disSum = 0;
+                String content = cw.getLeft();
+                double w = cw.getRight();   // 当前文本总体权重
+                CharacterIterator characterIterator = new StringCharacterIterator(content);
+                do {
+                    char c = characterIterator.current();
+                    while (c == '\n') c = characterIterator.next();
+                    if (c != '\uFFFF') parSentsMap.put(parN++, new ArrayList<>());
+                    while (c != '\n' && c != '\uFFFF') {
+                        StringBuilder sb = new StringBuilder();
+                        while (c != '.' && c != '。' && c != '\n' && c != '\0' && c != '\uFFFF' && c != '\r' && c != '?' && c != '!' && c != '？' && c != '！') {
                             sb.append(c);
                             c = characterIterator.next();
                         }
-                        c = characterIterator.previous();
+                        if (c == '.') {
+                            c = characterIterator.next();
+                            while (c == '.') {
+                                sb.append(c);
+                                c = characterIterator.next();
+                            }
+                            c = characterIterator.previous();
+                        }
+                        if (c == '\r') c = characterIterator.next();
+                        if (!(c == '\uFFFF' || c == '\n')) sb.append(c);
+                        if (c != '\uFFFF' && c != '\n') c = characterIterator.next();
+                        String str = sb.toString();
+                        if (!str.equals("") && str.charAt(0) == '\0') continue;
+                        int d = simHash.Distance(str, desc);
+                        disSum += d;
+                        parSentsMap.get(parN - 1).add(new MutablePair<>(str, (double) d));
                     }
-                    if (c == '\r') c = characterIterator.next();
-                    if (!(c == '\uFFFF' || c == '\n')) sb.append(c);
-                    if (c != '\uFFFF' && c != '\n') c = characterIterator.next();
-                    String str = sb.toString();
-                    if (str.charAt(0) == '\0') continue;
-                    int d = simHash.Distance(str, desc);
-                    disSum += d;
-                    parSentsMap.get(parN - 1).add(new MutablePair<>(str, (double) d));
-                }
-            } while (characterIterator.current() != '\uFFFF');
+                } while (characterIterator.current() != '\uFFFF');
 
-            for (List<MutablePair<String, Double>> pairList : parSentsMap.values()) {
-                for (MutablePair<String, Double> pair : pairList) {
-                    pair.setValue(w * pair.getValue() / disSum);
+                for (List<MutablePair<String, Double>> pairList : parSentsMap.values()) {
+                    for (MutablePair<String, Double> pair : pairList) {
+                        pair.setValue(w * pair.getValue() / disSum);
+                    }
                 }
-            }
 //            System.out.println(parSentsMap);
-            contentsSentencesWeightListToSubproject.add(Tuples.of(parSentsMap, w));
+                contentsSentencesWeightListToSubproject.add(Tuples.of(parSentsMap, w));
+            }
         }
+
 //        System.out.println(contentsSentencesWeightListToSubproject);
         return TextGenerator.generate(contentsSentencesWeightListToSubproject);
     }
