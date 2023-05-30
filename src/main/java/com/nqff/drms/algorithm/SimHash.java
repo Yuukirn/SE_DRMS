@@ -160,8 +160,9 @@ public class SimHash {
     public List<Plan> getPlansSimilarToSubproject(Subproject sp, int n) {
         Map<Plan, Double> planMap = new HashMap<>();
         List<Plan> plans = new ArrayList<>();
+        if (sp.getDescription() == null) return plans;
         for (Plan plan : simHash.planService.list()) {
-            if (plan.getUserId() == sp.getUserId() && plan.getDeleted() == 0) {
+            if (plan.getUserId() == sp.getUserId() && simHash.subprojectService.selectById(plan.getSubprojectId()).getDescription() != null && plan.getDeleted() == 0 && plan.getDescription() != null ) {
                 planMap.put(plan, Distance(plan, sp));
             }
         }

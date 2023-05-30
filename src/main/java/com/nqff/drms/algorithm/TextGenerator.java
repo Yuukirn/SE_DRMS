@@ -38,8 +38,10 @@ public class TextGenerator {
                 /* 取出当前段 */
                 List<Tuple2<Integer, MutablePair<String, Double>>> paragraph = content.get(j);
                 List<Tuple2<Integer, String>> cl = new ArrayList<>();
-                for (int k = 0; k < Math.round(centNumPerPar.get(j) * cwl.get(i)); k++) {
-                    cl.add(Tuples.of(paragraph.get(k).getT1(), paragraph.get(k).getT2().getLeft()));
+                for (int k = 0; k < centNumPerPar.get(j) * cwl.get(i); k++) {
+                    if(k<paragraph.size()) {
+                        cl.add(Tuples.of(paragraph.get(k).getT1(), paragraph.get(k).getT2().getLeft()));
+                    }
                 }
                 Collections.sort(cl, new Comparator<Tuple2<Integer, String>>() {
                     @Override
