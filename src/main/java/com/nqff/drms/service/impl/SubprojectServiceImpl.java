@@ -102,6 +102,8 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
     }
 
     private Subproject getPlanKeywordDocument(Subproject subproject){
+        if(subproject == null)
+            return null;
         int id = subproject.getId();
         List<Plan> plans = planDao.selectBySubprojectId(id);
         List<SubprojectKeywordRelation> relations = subProjectKeywordRelationDao.selectBySubprojectId(subproject.getId());
