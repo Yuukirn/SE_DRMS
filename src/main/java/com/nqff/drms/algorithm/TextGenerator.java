@@ -7,7 +7,7 @@ import reactor.util.function.Tuples;
 import java.util.*;
 
 public class TextGenerator {
-    public static final int MAX_LENGTH = 255;
+    public static final int MAX_LENGTH = 1024;
     public static String generate(List<Tuple2<Map<Integer, List<MutablePair<String, Double>>>, Double>> contentsSentencesWeightList) {
         StringBuilder res = new StringBuilder();
         double parNum = 0; // 平均段落数
@@ -58,7 +58,9 @@ public class TextGenerator {
         for (int i = 1; i <= (int) parNum; i++) {
             for (Map<Integer, String> m : ml) {
                 String sentence = m.get(i);
-                if(res.length() + sentence.length() <= MAX_LENGTH){
+                if(sentence == null)
+                    continue;
+                if(res.length() + sentence.length() >= MAX_LENGTH){
                     return res.toString();
                 }
                 if (i <= m.size()) {

@@ -1,6 +1,7 @@
 package com.nqff.drms.controller;
 
 import com.nqff.drms.algorithm.Algorithm;
+import com.nqff.drms.pojo.Keyword;
 import com.nqff.drms.pojo.Plan;
 import com.nqff.drms.pojo.Subproject;
 import com.nqff.drms.service.SubprojectService;
@@ -59,7 +60,9 @@ public class SubProjectController {
     @Operation(summary = "新增子项目", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping()
     public Result createNewProject(@RequestBody Subproject SubProject) {
-        SubProject.setKeywords(algorithm.getKeyWord(SubProject.getDescription()));
+        List<Keyword> keywords = SubProject.getKeywords();
+        if(keywords == null || keywords.size() == 0)
+            SubProject.setKeywords(algorithm.getKeyWord(SubProject.getDescription()));
         subProjectService.insertSubProject(SubProject);
         return Result.SUCCESS(null);
     }

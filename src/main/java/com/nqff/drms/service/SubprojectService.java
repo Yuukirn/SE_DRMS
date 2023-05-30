@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface SubprojectService extends IService<Subproject> {
     void insertSubProject(Subproject SubProject);
+    void deleteSubproject(int id);
     List<Subproject> selectAllSubProjectByProjectId(int pid);
     List<Subproject> selectSubProjectByNameAndProjectId(int pid, String name);
     List<Subproject> selectSubprojectByKeywordId(int keyword_id);

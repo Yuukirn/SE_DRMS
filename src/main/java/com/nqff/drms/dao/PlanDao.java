@@ -12,5 +12,5 @@ public interface PlanDao extends BaseMapper<Plan> {
 Plan selectPlanById(int id);
 
     @Select("select * from `plan` where subproject_id = #{subproject_id} and deleted = 0")
-    Plan selectBySubprojectId(int subproject_id);
+    List<Plan> selectBySubprojectId(int subproject_id);
 }

@@ -161,7 +161,7 @@ public class SimHash {
         Map<Plan, Double> planMap = new HashMap<>();
         List<Plan> plans = new ArrayList<>();
         for (Plan plan : simHash.planService.list()) {
-            if (plan.getUserId() == sp.getUserId()) {
+            if (plan.getUserId() == sp.getUserId() && plan.getDeleted() == 0) {
                 planMap.put(plan, Distance(plan, sp));
             }
         }

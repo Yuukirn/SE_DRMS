@@ -1,5 +1,6 @@
 package com.nqff.drms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nqff.drms.dao.KeywordDao;
 import com.nqff.drms.dao.PlanDao;
@@ -10,6 +11,7 @@ import com.nqff.drms.service.DocumentService;
 import com.nqff.drms.service.KeywordService;
 import com.nqff.drms.service.PlanService;
 import com.nqff.drms.service.SubprojectService;
+import org.apache.commons.math3.geometry.euclidean.oned.SubOrientedPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,13 +54,35 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
     }
 
     @Override
+    public void deleteSubproject(int id) {
+        List<Plan> plans = planDao.selectBySubprojectId(id);
+        for(Plan plan : plans){
+            planDao.deleteById(plan.getId());
+        }
+        removeById(id);
+    }
+
+    @Override
     public List<Subproject> selectAllSubProjectByProjectId(int pid){
-        return subProjectDao.selectAllSubProjectByProjectId(pid);
+        LambdaQueryWrapper<Subproject> wrapper = new LambdaQueryWrapper<Subproject>();
+        wrapper.eq(Subproject::getProjectId,pid);
+        List<Subproject> subprojects = subProjectDao.selectList(wrapper);
+        for(Subproject subproject : subprojects){
+            getPlanKeywordDocument(subproject);
+        }
+        return subprojects;
     }
 
     @Override
     public List<Subproject> selectSubProjectByNameAndProjectId(int pid, String name) {
-        return subProjectDao.selectSubProjectByNameAndProjectId(pid,'%'+name+'%');
+        LambdaQueryWrapper<Subproject> wrapper = new LambdaQueryWrapper<Subproject>();
+        wrapper.eq(Subproject::getProjectId,pid);
+        wrapper.like(Subproject::getName,name);
+        List<Subproject> subprojects = subProjectDao.selectList(wrapper);
+        for(Subproject subproject : subprojects){
+            getPlanKeywordDocument(subproject);
+        }
+        return subprojects;
     }
 
     @Override
@@ -74,17 +98,25 @@ public class SubprojectServiceImpl extends ServiceImpl<SubprojectDao, Subproject
     @Override
     public Subproject selectById(int id) {
         Subproject subproject = subProjectDao.selectById(id);
-        Plan plan = planDao.selectBySubprojectId(id);
+        return getPlanKeywordDocument(subproject);
+    }
+
+    private Subproject getPlanKeywordDocument(Subproject subproject){
+        int id = subproject.getId();
+        List<Plan> plans = planDao.selectBySubprojectId(id);
         List<SubprojectKeywordRelation> relations = subProjectKeywordRelationDao.selectBySubprojectId(subproject.getId());
         List<Keyword> keywords = new ArrayList<Keyword>();
         for(SubprojectKeywordRelation relation : relations){
             keywords.add(keywordService.getById(relation.getKeywordId()));
         }
-        subproject.setPlan(plan);
+        if(plans != null && plans.size() != 0){
+            subproject.setPlan(plans.get(0));
+        }
         subproject.setKeywords(keywords);
         subproject.setDocuments(documentService.selectDocumentsBySubprojectId(id));
         return subproject;
     }
+
 
     @Override
     public void updateSubprojectById(Subproject subproject) {

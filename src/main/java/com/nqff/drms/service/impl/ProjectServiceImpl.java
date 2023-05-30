@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nqff.drms.dao.ProjectDao;
 import com.nqff.drms.pojo.Project;
+import com.nqff.drms.pojo.Subproject;
 import com.nqff.drms.service.ProjectService;
+import com.nqff.drms.service.SubprojectService;
 import com.nqff.drms.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,21 @@ import java.util.List;
 public class ProjectServiceImpl extends ServiceImpl<ProjectDao, Project> implements ProjectService {
     @Autowired
     private ProjectDao projectDao;
+    @Autowired
+    private SubprojectService subprojectService;
 
     @Override
     public void insertProject(Project project) {
         projectDao.insert(project);
+    }
+
+    @Override
+    public void deleteProject(int id) {
+        List<Subproject> subprojects = subprojectService.selectAllSubProjectByProjectId(id);
+        for(Subproject subproject : subprojects){
+            subprojectService.deleteSubproject(subproject.getId());
+        }
+        removeById(id);
     }
 
     @Override
