@@ -62,7 +62,7 @@ public class TextGenerator {
                 String sentence = m.get(i);
                 if(sentence == null)
                     continue;
-                if(res.length() + sentence.length() >= MAX_LENGTH){
+                if(res.length() + sentence.length() > MAX_LENGTH){
                     return res.toString();
                 }
                 if (i <= m.size()) {

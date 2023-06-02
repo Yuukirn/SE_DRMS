@@ -194,10 +194,10 @@ public class Algorithm {
         List docContextList = simHash.getDocumentContent(subproject_id);
         String str1 = createNewContent(planDescWeightList, subproject_id, user_id);
         String str2 = createNewContent(docContextList, subproject_id, user_id);
-        if (str1 == null) {
+        if (str1.equals("")) {
             description = str2;
         } else {
-            if (str2 == null) {
+            if (str2.equals("")) {
                 description = str1;
             } else {
                 List strList = new ArrayList<>();
